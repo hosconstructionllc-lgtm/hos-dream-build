@@ -47,7 +47,7 @@ const Contact = () => {
               </div>
               <div className="flex items-center gap-4">
                 <Mail className="w-5 h-5 text-primary" />
-                <span className="text-secondary-foreground/80">info@hosconstruction.com</span>
+                <a href="mailto:hosconstructionllc@gmail.com" className="text-secondary-foreground/80 hover:text-primary transition-colors">hosconstructionllc@gmail.com</a>
               </div>
               <div className="flex items-center gap-4">
                 <MapPin className="w-5 h-5 text-primary" />
