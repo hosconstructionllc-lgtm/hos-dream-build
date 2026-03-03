@@ -12,11 +12,11 @@ export default {
         "2xl": "1400px",
       },
     },
-    fontFamily: {
-      heading: ["Oswald", "sans-serif"],
-      body: ["Source Sans 3", "sans-serif"],
-    },
     extend: {
+      fontFamily: {
+        heading: ["Oswald", "sans-serif"],
+        body: ["Source Sans 3", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
