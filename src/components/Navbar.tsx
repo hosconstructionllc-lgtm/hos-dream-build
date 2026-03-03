@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import hosLogo from "@/assets/hos-logo.png";
+import hosLogo from "@/assets/hos-logo-new.png";
 
 const navLinks = [
   { label: "Home", href: "#home" },
