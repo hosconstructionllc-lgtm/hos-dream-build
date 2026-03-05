@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import hosLogo from "@/assets/hos-logo-new.png";
@@ -13,12 +13,33 @@ const navLinks = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-secondary/95 backdrop-blur-md border-b border-secondary">
-      <div className="container mx-auto flex items-center justify-between h-20 px-4">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-secondary/95 backdrop-blur-md border-b border-secondary transition-all duration-300">
+      <div
+        className="mx-auto flex items-center justify-between px-12 transition-all duration-300"
+        style={{
+          maxWidth: "1600px",
+          height: scrolled ? "120px" : "220px",
+        }}
+      >
         <a href="#home" className="flex items-center gap-3">
-          <img src={hosLogo} alt="HOS Construction Logo" className="h-14 w-auto" />
+          <img
+            src={hosLogo}
+            alt="HOS Construction Logo"
+            className="w-auto transition-all duration-300"
+            style={{
+              height: scrolled ? "80px" : "200px",
+              maxWidth: "1200px",
+            }}
+          />
         </a>
 
         {/* Desktop */}
