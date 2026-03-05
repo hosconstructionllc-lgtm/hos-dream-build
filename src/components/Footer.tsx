@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="flex items-center gap-3">
             <img src={hosLogo} alt="HOS Construction Logo" className="h-10 w-auto" />
             <span className="font-heading text-background/90 uppercase tracking-wider text-sm">
-              HOS Construction, LLC
+              HOS Construction
             </span>
           </div>
 
@@ -58,7 +58,7 @@ const Footer = () => {
 
         <div className="border-t border-background/10 mt-8 pt-8 text-center">
           <p className="text-background/40 text-xs font-body">
-            © {new Date().getFullYear()} HOS Construction, LLC. All rights reserved.
+            © {new Date().getFullYear()} HOS Construction. All rights reserved.
           </p>
         </div>
       </div>

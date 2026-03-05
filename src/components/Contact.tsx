@@ -37,7 +37,7 @@ const Contact = () => {
             className="space-y-8"
           >
             <p className="text-secondary-foreground/70 leading-relaxed">
-              Ready to start your next project? Reach out and let's discuss how HOS Construction, LLC
+              Ready to start your next project? Reach out and let's discuss how HOS Construction
               can bring your vision to life.
             </p>
             <div className="space-y-6">
@@ -51,7 +51,7 @@ const Contact = () => {
               </div>
               <div className="flex items-center gap-4">
                 <MapPin className="w-5 h-5 text-primary" />
-                <span className="text-secondary-foreground/80">Serving Your Local Area</span>
+                <span className="text-secondary-foreground/80">Houston, TX</span>
               </div>
             </div>
           </motion.div>
