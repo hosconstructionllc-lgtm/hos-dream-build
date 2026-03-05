@@ -226,15 +226,15 @@ const Projects = () => {
                   <>
                     <button
                       onClick={prevMedia}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg"
                     >
-                      <ChevronLeft size={20} />
+                      <ChevronLeft size={28} />
                     </button>
                     <button
                       onClick={nextMedia}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg"
                     >
-                      <ChevronRight size={20} />
+                      <ChevronRight size={28} />
                     </button>
                   </>
                 )}
