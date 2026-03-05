@@ -1,13 +1,18 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Ruler, CalendarCheck, X, ChevronLeft, ChevronRight } from "lucide-react";
 import project1 from "@/assets/project-1.jpg";
 import project2 from "@/assets/project-2.jpg";
 import project3 from "@/assets/project-3.jpg";
 
+interface MediaItem {
+  type: "image" | "video";
+  src: string;
+}
+
 interface Project {
   image: string;
-  images: string[];
+  media: MediaItem[];
   title: string;
   category: string;
   description: string;
@@ -19,7 +24,7 @@ interface Project {
 const projects: Project[] = [
   {
     image: project1,
-    images: [project1],
+    media: [{ type: "image", src: project1 }],
     title: "Arwa Yemeni Coffee",
     category: "Commercial Build-Out",
     description:
@@ -30,7 +35,7 @@ const projects: Project[] = [
   },
   {
     image: project2,
-    images: [project2],
+    media: [{ type: "image", src: project2 }],
     title: "Custom Residential Home",
     category: "Residential",
     description:
@@ -41,7 +46,7 @@ const projects: Project[] = [
   },
   {
     image: project3,
-    images: [project3],
+    media: [{ type: "image", src: project3 }],
     title: "Modern Kitchen Remodel",
     category: "Renovation",
     description:
@@ -54,27 +59,45 @@ const projects: Project[] = [
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [currentImage, setCurrentImage] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   const openProject = (project: Project) => {
     setSelectedProject(project);
-    setCurrentImage(0);
+    setCurrentIndex(0);
   };
 
   const closeProject = () => {
     setSelectedProject(null);
-    setCurrentImage(0);
+    setCurrentIndex(0);
   };
 
-  const nextImage = () => {
+  const nextMedia = () => {
     if (selectedProject) {
-      setCurrentImage((prev) => (prev + 1) % selectedProject.images.length);
+      setCurrentIndex((prev) => (prev + 1) % selectedProject.media.length);
     }
   };
 
-  const prevImage = () => {
+  const prevMedia = () => {
     if (selectedProject) {
-      setCurrentImage((prev) => (prev - 1 + selectedProject.images.length) % selectedProject.images.length);
+      setCurrentIndex((prev) => (prev - 1 + selectedProject.media.length) % selectedProject.media.length);
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextMedia();
+      else prevMedia();
     }
   };
 
@@ -172,13 +195,26 @@ const Projects = () => {
               className="bg-background rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Image gallery */}
-              <div className="relative">
-                <img
-                  src={selectedProject.images[currentImage]}
-                  alt={selectedProject.title}
-                  className="w-full aspect-video object-cover rounded-t-lg"
-                />
+              {/* Media gallery */}
+              <div
+                className="relative"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                {selectedProject.media[currentIndex]?.type === "video" ? (
+                  <video
+                    src={selectedProject.media[currentIndex].src}
+                    controls
+                    className="w-full aspect-video object-cover rounded-t-lg"
+                  />
+                ) : (
+                  <img
+                    src={selectedProject.media[currentIndex]?.src}
+                    alt={selectedProject.title}
+                    className="w-full aspect-video object-cover rounded-t-lg"
+                  />
+                )}
                 <button
                   onClick={closeProject}
                   className="absolute top-4 right-4 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors"
@@ -186,16 +222,16 @@ const Projects = () => {
                   <X size={20} />
                 </button>
 
-                {selectedProject.images.length > 1 && (
+                {selectedProject.media.length > 1 && (
                   <>
                     <button
-                      onClick={prevImage}
+                      onClick={prevMedia}
                       className="absolute left-4 top-1/2 -translate-y-1/2 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors"
                     >
                       <ChevronLeft size={20} />
                     </button>
                     <button
-                      onClick={nextImage}
+                      onClick={nextMedia}
                       className="absolute right-4 top-1/2 -translate-y-1/2 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors"
                     >
                       <ChevronRight size={20} />
@@ -203,10 +239,16 @@ const Projects = () => {
                   </>
                 )}
 
-                {/* Image counter */}
-                {selectedProject.images.length > 1 && (
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-secondary/80 text-secondary-foreground text-xs font-heading px-3 py-1 rounded-full">
-                    {currentImage + 1} / {selectedProject.images.length}
+                {/* Media counter & dots */}
+                {selectedProject.media.length > 1 && (
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                    {selectedProject.media.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentIndex(idx)}
+                        className={`w-2.5 h-2.5 rounded-full transition-colors ${idx === currentIndex ? "bg-primary" : "bg-secondary-foreground/40"}`}
+                      />
+                    ))}
                   </div>
                 )}
               </div>
