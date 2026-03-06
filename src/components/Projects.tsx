@@ -37,23 +37,21 @@ const projects: Project[] = [
     image: project2,
     media: [{ type: "image", src: project2 }],
     title: "Custom Residential Home",
-    category: "Residential",
-    description:
-      "A fully custom-built residential home designed with modern aesthetics and quality materials. Features open-concept living, energy-efficient systems, and premium finishes throughout.",
-    location: "Houston, TX",
-    size: "3,500 sq ft",
-    completed: "2024",
+    category: "Upcoming",
+    description: "",
+    location: "",
+    size: "",
+    completed: "",
   },
   {
     image: project3,
     media: [{ type: "image", src: project3 }],
     title: "Modern Kitchen Remodel",
-    category: "Renovation",
-    description:
-      "Complete kitchen renovation featuring custom cabinetry, quartz countertops, modern appliances, and a redesigned layout for maximum functionality and style.",
-    location: "Houston, TX",
-    size: "800 sq ft",
-    completed: "2024",
+    category: "Upcoming",
+    description: "",
+    location: "",
+    size: "",
+    completed: "",
   },
 ];
 
