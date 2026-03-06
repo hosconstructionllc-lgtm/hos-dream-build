@@ -37,23 +37,21 @@ const projects: Project[] = [
     image: project2,
     media: [{ type: "image", src: project2 }],
     title: "Custom Residential Home",
-    category: "Residential",
-    description:
-      "A fully custom-built residential home designed with modern aesthetics and quality materials. Features open-concept living, energy-efficient systems, and premium finishes throughout.",
-    location: "Houston, TX",
-    size: "3,500 sq ft",
-    completed: "2024",
+    category: "Upcoming",
+    description: "",
+    location: "",
+    size: "",
+    completed: "",
   },
   {
     image: project3,
     media: [{ type: "image", src: project3 }],
     title: "Modern Kitchen Remodel",
-    category: "Renovation",
-    description:
-      "Complete kitchen renovation featuring custom cabinetry, quartz countertops, modern appliances, and a redesigned layout for maximum functionality and style.",
-    location: "Houston, TX",
-    size: "800 sq ft",
-    completed: "2024",
+    category: "Upcoming",
+    description: "",
+    location: "",
+    size: "",
+    completed: "",
   },
 ];
 
@@ -145,31 +143,35 @@ const Projects = () => {
                 {/* Card content */}
                 <div className="p-6">
                   <h3 className="font-heading text-xl md:text-2xl text-foreground mb-3">{p.title}</h3>
-                  <p className="font-body text-muted-foreground text-sm leading-relaxed mb-5 line-clamp-3">
-                    {p.description}
-                  </p>
+                  {p.description && (
+                    <p className="font-body text-muted-foreground text-sm leading-relaxed mb-5 line-clamp-3">
+                      {p.description}
+                    </p>
+                  )}
 
                   {/* Meta details */}
-                  <div className="flex items-center gap-6 text-xs font-body border-t border-border pt-4">
-                    <div>
-                      <span className="text-muted-foreground block mb-1">Location</span>
-                      <span className="text-primary font-semibold flex items-center gap-1">
-                        <MapPin size={12} /> {p.location}
-                      </span>
+                  {p.location && (
+                    <div className="flex items-center gap-6 text-xs font-body border-t border-border pt-4">
+                      <div>
+                        <span className="text-muted-foreground block mb-1">Location</span>
+                        <span className="text-primary font-semibold flex items-center gap-1">
+                          <MapPin size={12} /> {p.location}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground block mb-1">Size</span>
+                        <span className="text-foreground font-semibold flex items-center gap-1">
+                          <Ruler size={12} /> {p.size}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground block mb-1">Completed</span>
+                        <span className="text-foreground font-semibold flex items-center gap-1">
+                          <CalendarCheck size={12} /> {p.completed}
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-muted-foreground block mb-1">Size</span>
-                      <span className="text-foreground font-semibold flex items-center gap-1">
-                        <Ruler size={12} /> {p.size}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground block mb-1">Completed</span>
-                      <span className="text-foreground font-semibold flex items-center gap-1">
-                        <CalendarCheck size={12} /> {p.completed}
-                      </span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </motion.div>
             ))}
