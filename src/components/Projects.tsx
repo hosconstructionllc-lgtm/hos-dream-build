@@ -115,7 +115,7 @@ const Projects = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {projects.map((p, i) => (
+            {projects.filter(p => p.description).map((p, i) => (
               <motion.div
                 key={p.title}
                 initial={{ opacity: 0, y: 30 }}
