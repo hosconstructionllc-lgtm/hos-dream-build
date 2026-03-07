@@ -27,19 +27,19 @@ const Navbar = () => {
         className="mx-auto flex items-center justify-between px-12 transition-all duration-300"
         style={{
           maxWidth: "1600px",
-          height: scrolled ? "120px" : "220px",
+          height: scrolled ? "80px" : "100px",
         }}
       >
         <a href="#home" className="flex items-center gap-3">
-          <img
-            src={hosLogo}
-            alt="HOS Construction Logo"
-            className="w-auto transition-all duration-300"
-            style={{
-              height: scrolled ? "80px" : "200px",
-              maxWidth: "1200px",
-            }}
-          />
+           <img
+             src={hosLogo}
+             alt="HOS Construction Logo"
+             className="w-auto transition-all duration-300"
+             style={{
+               height: scrolled ? "50px" : "80px",
+               maxWidth: "1200px",
+             }}
+           />
         </a>
 
         {/* Desktop */}
