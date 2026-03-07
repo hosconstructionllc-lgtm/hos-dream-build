@@ -24,8 +24,9 @@ interface Project {
 
 const projects: Project[] = [
   {
-    image: "https://i.postimg.cc/CKpYJ1c1/1.avif",
+    image: arwaCoffeeHero,
     media: [
+      { type: "image", src: arwaCoffeeHero },
       { type: "image", src: "https://i.postimg.cc/CKpYJ1c1/1.avif" },
       { type: "image", src: "https://i.postimg.cc/BvCWgC8y/2.avif" },
       { type: "image", src: "https://i.postimg.cc/3wZMBZyB/3.avif" },
@@ -52,7 +53,7 @@ const projects: Project[] = [
       "A modern Yemeni coffee shop featuring contemporary interior design with traditional Middle Eastern influences. This 2,000 sq ft space was transformed into a warm, inviting atmosphere with custom woodwork, specialty lighting, and a fully equipped coffee bar — blending culture and craftsmanship seamlessly.",
     location: "Houston, TX",
     size: "2,000 sq ft",
-    completed: "2025",
+    completed: "2026",
   },
   {
     image: project2,
