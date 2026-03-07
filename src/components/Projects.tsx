@@ -4,6 +4,7 @@ import { MapPin, Ruler, CalendarCheck, X, ChevronLeft, ChevronRight } from "luci
 import project1 from "@/assets/project-1.jpg";
 import project2 from "@/assets/project-2.jpg";
 import project3 from "@/assets/project-3.jpg";
+import arwaCoffeeHero from "@/assets/arwa-coffee-hero.png";
 
 interface MediaItem {
   type: "image" | "youtube";
@@ -23,8 +24,9 @@ interface Project {
 
 const projects: Project[] = [
   {
-    image: "https://i.postimg.cc/CKpYJ1c1/1.avif",
+    image: arwaCoffeeHero,
     media: [
+      { type: "image", src: arwaCoffeeHero },
       { type: "image", src: "https://i.postimg.cc/CKpYJ1c1/1.avif" },
       { type: "image", src: "https://i.postimg.cc/BvCWgC8y/2.avif" },
       { type: "image", src: "https://i.postimg.cc/3wZMBZyB/3.avif" },
@@ -51,7 +53,7 @@ const projects: Project[] = [
       "A modern Yemeni coffee shop featuring contemporary interior design with traditional Middle Eastern influences. This 2,000 sq ft space was transformed into a warm, inviting atmosphere with custom woodwork, specialty lighting, and a fully equipped coffee bar — blending culture and craftsmanship seamlessly.",
     location: "Houston, TX",
     size: "2,000 sq ft",
-    completed: "2025",
+    completed: "2026",
   },
   {
     image: project2,
@@ -213,12 +215,12 @@ const Projects = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 30 }}
               transition={{ duration: 0.3 }}
-              className="bg-background rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+              className="bg-background rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Media gallery */}
               <div
-                className="relative"
+                className="relative flex-shrink-0"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -239,7 +241,7 @@ const Projects = () => {
                 )}
                 <button
                   onClick={closeProject}
-                  className="absolute top-4 right-4 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors"
+                  className="absolute top-4 right-4 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors z-10"
                 >
                   <X size={20} />
                 </button>
@@ -248,13 +250,13 @@ const Projects = () => {
                   <>
                     <button
                       onClick={prevMedia}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg z-10"
                     >
                       <ChevronLeft size={28} />
                     </button>
                     <button
                       onClick={nextMedia}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg z-10"
                     >
                       <ChevronRight size={28} />
                     </button>
@@ -263,7 +265,7 @@ const Projects = () => {
 
                 {/* Media counter & dots */}
                 {selectedProject.media.length > 1 && (
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
                     {selectedProject.media.map((_, idx) => (
                       <button
                         key={idx}
@@ -275,8 +277,8 @@ const Projects = () => {
                 )}
               </div>
 
-              {/* Detail content */}
-              <div className="p-8">
+              {/* Detail content - scrollable */}
+              <div className="p-8 overflow-y-auto flex-1">
                 <span className="font-heading text-xs uppercase tracking-widest text-primary">{selectedProject.category}</span>
                 <h2 className="font-heading text-3xl md:text-4xl text-foreground mt-2 mb-4">{selectedProject.title}</h2>
                 <p className="font-body text-muted-foreground leading-relaxed mb-8">{selectedProject.description}</p>
