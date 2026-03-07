@@ -220,7 +220,7 @@ const Projects = () => {
             >
               {/* Media gallery */}
               <div
-                className="relative"
+                className="relative flex-shrink-0"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -241,7 +241,7 @@ const Projects = () => {
                 )}
                 <button
                   onClick={closeProject}
-                  className="absolute top-4 right-4 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors"
+                  className="absolute top-4 right-4 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors z-10"
                 >
                   <X size={20} />
                 </button>
@@ -250,13 +250,13 @@ const Projects = () => {
                   <>
                     <button
                       onClick={prevMedia}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg z-10"
                     >
                       <ChevronLeft size={28} />
                     </button>
                     <button
                       onClick={nextMedia}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg z-10"
                     >
                       <ChevronRight size={28} />
                     </button>
@@ -265,7 +265,7 @@ const Projects = () => {
 
                 {/* Media counter & dots */}
                 {selectedProject.media.length > 1 && (
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
                     {selectedProject.media.map((_, idx) => (
                       <button
                         key={idx}
@@ -277,8 +277,8 @@ const Projects = () => {
                 )}
               </div>
 
-              {/* Detail content */}
-              <div className="p-8">
+              {/* Detail content - scrollable */}
+              <div className="p-8 overflow-y-auto flex-1">
                 <span className="font-heading text-xs uppercase tracking-widest text-primary">{selectedProject.category}</span>
                 <h2 className="font-heading text-3xl md:text-4xl text-foreground mt-2 mb-4">{selectedProject.title}</h2>
                 <p className="font-body text-muted-foreground leading-relaxed mb-8">{selectedProject.description}</p>
