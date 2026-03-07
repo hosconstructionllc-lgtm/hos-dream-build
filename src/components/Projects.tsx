@@ -223,11 +223,12 @@ const Projects = () => {
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
-                {selectedProject.media[currentIndex]?.type === "video" ? (
-                  <video
+                {selectedProject.media[currentIndex]?.type === "youtube" ? (
+                  <iframe
                     src={selectedProject.media[currentIndex].src}
-                    controls
-                    className="w-full aspect-video object-cover rounded-t-lg"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full aspect-video rounded-t-lg"
                   />
                 ) : (
                   <img
