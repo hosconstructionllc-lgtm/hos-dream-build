@@ -4,11 +4,11 @@ import heroImage from "@/assets/hero-construction.jpg";
 const Hero = () => {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      />
+       {/* Background image */}
+       <div
+         className="absolute inset-0 bg-cover bg-center"
+         style={{ backgroundImage: `url(${heroImage})`, backgroundSize: "140%" }}
+       />
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-secondary/75" />
 
