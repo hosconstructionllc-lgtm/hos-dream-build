@@ -234,7 +234,7 @@ const Projects = () => {
                   <img
                     src={selectedProject.media[currentIndex]?.src}
                     alt={selectedProject.title}
-                    className="w-full aspect-video object-cover rounded-t-lg"
+                    className="w-full aspect-video object-contain rounded-t-lg bg-black"
                   />
                 )}
                 <button
