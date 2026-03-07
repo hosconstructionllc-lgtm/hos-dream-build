@@ -6,7 +6,7 @@ import project2 from "@/assets/project-2.jpg";
 import project3 from "@/assets/project-3.jpg";
 
 interface MediaItem {
-  type: "image" | "video";
+  type: "image" | "youtube";
   src: string;
 }
 
@@ -23,8 +23,28 @@ interface Project {
 
 const projects: Project[] = [
   {
-    image: project1,
-    media: [{ type: "image", src: project1 }],
+    image: "https://i.postimg.cc/CKpYJ1c1/1.avif",
+    media: [
+      { type: "image", src: "https://i.postimg.cc/CKpYJ1c1/1.avif" },
+      { type: "image", src: "https://i.postimg.cc/BvCWgC8y/2.avif" },
+      { type: "image", src: "https://i.postimg.cc/3wZMBZyB/3.avif" },
+      { type: "image", src: "https://i.postimg.cc/mrSxwScn/4.avif" },
+      { type: "youtube", src: "https://www.youtube.com/embed/NQK6f5SwU-0" },
+      { type: "youtube", src: "https://www.youtube.com/embed/vnZYs5i_wSE" },
+      { type: "image", src: "https://i.postimg.cc/xCC0NZsf/7.avif" },
+      { type: "youtube", src: "https://www.youtube.com/embed/2zsBjgPphhc" },
+      { type: "image", src: "https://i.postimg.cc/brVS2bHD/9.avif" },
+      { type: "youtube", src: "https://www.youtube.com/embed/QbPXbNcXxfA" },
+      { type: "youtube", src: "https://www.youtube.com/embed/8tE1lLqTMa0" },
+      { type: "image", src: "https://i.postimg.cc/25CHGNNn/12.avif" },
+      { type: "youtube", src: "https://www.youtube.com/embed/y1uaHsv9zmM" },
+      { type: "image", src: "https://i.postimg.cc/6q13jXPT/IMG-3625.avif" },
+      { type: "youtube", src: "https://www.youtube.com/embed/pobOE_D4ZVo" },
+      { type: "youtube", src: "https://www.youtube.com/embed/YD9ke5D5oIM" },
+      { type: "image", src: "https://i.postimg.cc/cCJ7tdYG/IMG-5483.jpg" },
+      { type: "image", src: "https://i.postimg.cc/Sxc9sn5V/IMG-6503.jpg" },
+      { type: "image", src: "https://i.postimg.cc/k59btn3s/IMG-6506.jpg" },
+    ],
     title: "Arwa Yemeni Coffee",
     category: "Commercial Build-Out",
     description:
@@ -54,7 +74,6 @@ const projects: Project[] = [
     completed: "",
   },
 ];
-
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
