@@ -27,7 +27,7 @@ const Navbar = () => {
         className="mx-auto flex items-center justify-between px-12 transition-all duration-300"
         style={{
           maxWidth: "1600px",
-          height: scrolled ? "120px" : "220px",
+          height: scrolled ? "80px" : "100px",
         }}
       >
         <a href="#home" className="flex items-center gap-3">
