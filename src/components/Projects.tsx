@@ -23,8 +23,28 @@ interface Project {
 
 const projects: Project[] = [
   {
-    image: project1,
-    media: [{ type: "image", src: project1 }],
+    image: "https://i.postimg.cc/CKpYJ1c1/1.avif",
+    media: [
+      { type: "image", src: "https://i.postimg.cc/CKpYJ1c1/1.avif" },
+      { type: "image", src: "https://i.postimg.cc/BvCWgC8y/2.avif" },
+      { type: "image", src: "https://i.postimg.cc/3wZMBZyB/3.avif" },
+      { type: "image", src: "https://i.postimg.cc/mrSxwScn/4.avif" },
+      { type: "youtube", src: "https://www.youtube.com/embed/NQK6f5SwU-0?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1" },
+      { type: "youtube", src: "https://www.youtube.com/embed/vnZYs5i_wSE?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1" },
+      { type: "image", src: "https://i.postimg.cc/xCC0NZsf/7.avif" },
+      { type: "youtube", src: "https://www.youtube.com/embed/2zsBjgPphhc?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1" },
+      { type: "image", src: "https://i.postimg.cc/brVS2bHD/9.avif" },
+      { type: "youtube", src: "https://www.youtube.com/embed/QbPXbNcXxfA?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1" },
+      { type: "youtube", src: "https://www.youtube.com/embed/8tE1lLqTMa0?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1" },
+      { type: "image", src: "https://i.postimg.cc/25CHGNNn/12.avif" },
+      { type: "youtube", src: "https://www.youtube.com/embed/y1uaHsv9zmM?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1" },
+      { type: "image", src: "https://i.postimg.cc/6q13jXPT/IMG-3625.avif" },
+      { type: "youtube", src: "https://www.youtube.com/embed/pobOE_D4ZVo?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1" },
+      { type: "youtube", src: "https://www.youtube.com/embed/YD9ke5D5oIM?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1" },
+      { type: "image", src: "https://i.postimg.cc/cCJ7tdYG/IMG-5483.jpg" },
+      { type: "image", src: "https://i.postimg.cc/Sxc9sn5V/IMG-6503.jpg" },
+      { type: "image", src: "https://i.postimg.cc/k59btn3s/IMG-6506.jpg" },
+    ],
     title: "Arwa Yemeni Coffee",
     category: "Commercial Build-Out",
     description:
