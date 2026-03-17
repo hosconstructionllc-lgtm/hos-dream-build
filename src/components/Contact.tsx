@@ -6,11 +6,34 @@ import { useToast } from "@/hooks/use-toast";
 const Contact = () => {
   const { toast } = useToast();
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: "Message Sent!", description: "We'll get back to you shortly." });
-    setForm({ name: "", email: "", phone: "", message: "" });
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("https://formsubmit.co/ajax/contact@hosconstructiontx.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          message: form.message,
+          _subject: `New inquiry from ${form.name}`,
+        }),
+      });
+      if (res.ok) {
+        toast({ title: "Message Sent!", description: "We'll get back to you shortly." });
+        setForm({ name: "", email: "", phone: "", message: "" });
+      } else {
+        toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Error", description: "Could not send message. Please try again.", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
