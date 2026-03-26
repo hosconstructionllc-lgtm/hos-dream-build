@@ -35,10 +35,10 @@ const Navbar = () => {
              src={hosLogo}
              alt="HOS Construction Logo"
              className="w-auto transition-all duration-300"
-             style={{
-               height: scrolled ? "50px" : "80px",
-               maxWidth: "1200px",
-             }}
+              style={{
+                height: scrolled ? "65px" : "110px",
+                maxWidth: "1200px",
+              }}
            />
         </a>
 
