@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { MapPin, Ruler, CalendarCheck, X, ChevronLeft, ChevronRight } from "lucide-react";
 import project1 from "@/assets/project-1.jpg";
 import project2 from "@/assets/project-2.jpg";
@@ -74,11 +74,20 @@ const projects: Project[] = [
     completed: "",
   },
 ];
+
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+  const sectionRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const bgY = useTransform(scrollYProgress, [0, 1], ["3%", "-3%"]);
 
   const openProject = (project: Project) => {
     setSelectedProject(project);
@@ -120,36 +129,49 @@ const Projects = () => {
 
   return (
     <>
-      <section id="projects" className="section-padding bg-secondary">
-        <div className="container mx-auto">
+      <section id="projects" ref={sectionRef} className="section-padding bg-secondary overflow-hidden">
+        <motion.div style={{ y: bgY }} className="container mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="text-center mb-20"
           >
-            <p className="font-heading uppercase tracking-[0.25em] text-primary text-sm mb-3">Our Portfolio</p>
-            <h2 className="font-heading text-4xl md:text-5xl uppercase text-secondary-foreground">Featured Projects</h2>
+            <p className="font-heading uppercase tracking-[0.4em] text-primary text-xs mb-4">Our Portfolio</p>
+            <h2 className="font-heading text-5xl md:text-6xl uppercase text-secondary-foreground">Featured Projects</h2>
+            <motion.div
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="w-24 h-1 bg-primary mx-auto mt-6 origin-left"
+            />
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {projects.filter(p => p.description).map((p, i) => (
               <motion.div
                 key={p.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.15 }}
+                initial={{ opacity: 0, y: 80, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{
+                  duration: 0.8,
+                  delay: i * 0.2,
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                }}
+                whileHover={{ y: -10 }}
                 onClick={() => openProject(p)}
-                className="bg-background rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
+                className="bg-background rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500 cursor-pointer group"
               >
-                {/* Image with category banner */}
                 <div className="relative overflow-hidden">
-                  <img
+                  <motion.img
                     src={p.image}
                     alt={p.title}
-                    className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full aspect-[4/3] object-cover"
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.6 }}
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-primary/60 to-primary/80 flex items-center justify-center">
@@ -159,7 +181,6 @@ const Projects = () => {
                   </div>
                 </div>
 
-                {/* Card content */}
                 <div className="p-6">
                   <h3 className="font-heading text-xl md:text-2xl text-foreground mb-3">{p.title}</h3>
                   {p.description && (
@@ -167,8 +188,6 @@ const Projects = () => {
                       {p.description}
                     </p>
                   )}
-
-                  {/* Meta details */}
                   {p.location && (
                     <div className="flex items-center gap-6 text-xs font-body border-t border-border pt-4">
                       <div>
@@ -195,48 +214,58 @@ const Projects = () => {
               </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </section>
 
-      {/* Project Detail Modal */}
+      {/* Modal */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-secondary/90 backdrop-blur-sm flex items-center justify-center p-4"
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 bg-secondary/90 backdrop-blur-md flex items-center justify-center p-4"
             onClick={closeProject}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              initial={{ opacity: 0, scale: 0.85, y: 40 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 30 }}
-              transition={{ duration: 0.3 }}
+              exit={{ opacity: 0, scale: 0.85, y: 40 }}
+              transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="bg-background rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Media gallery */}
               <div
                 className="relative flex-shrink-0"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
               >
-                {selectedProject.media[currentIndex]?.type === "youtube" ? (
-                  <iframe
-                    src={selectedProject.media[currentIndex].src}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full aspect-video rounded-t-lg"
-                  />
-                ) : (
-                  <img
-                    src={selectedProject.media[currentIndex]?.src}
-                    alt={selectedProject.title}
-                    className="w-full aspect-video object-contain rounded-t-lg bg-black"
-                  />
-                )}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentIndex}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {selectedProject.media[currentIndex]?.type === "youtube" ? (
+                      <iframe
+                        src={selectedProject.media[currentIndex].src}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="w-full aspect-video rounded-t-lg"
+                      />
+                    ) : (
+                      <img
+                        src={selectedProject.media[currentIndex]?.src}
+                        alt={selectedProject.title}
+                        className="w-full aspect-video object-contain rounded-t-lg bg-black"
+                      />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
                 <button
                   onClick={closeProject}
                   className="absolute top-4 right-4 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors z-10"
@@ -261,44 +290,35 @@ const Projects = () => {
                   </>
                 )}
 
-                {/* Media counter & dots */}
                 {selectedProject.media.length > 1 && (
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
                     {selectedProject.media.map((_, idx) => (
                       <button
                         key={idx}
                         onClick={() => setCurrentIndex(idx)}
-                        className={`w-2.5 h-2.5 rounded-full transition-colors ${idx === currentIndex ? "bg-primary" : "bg-secondary-foreground/40"}`}
+                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "bg-primary scale-125" : "bg-secondary-foreground/40"}`}
                       />
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Detail content - scrollable */}
               <div className="p-8 overflow-y-auto flex-1">
                 <span className="font-heading text-xs uppercase tracking-widest text-primary">{selectedProject.category}</span>
                 <h2 className="font-heading text-3xl md:text-4xl text-foreground mt-2 mb-4">{selectedProject.title}</h2>
                 <p className="font-body text-muted-foreground leading-relaxed mb-8">{selectedProject.description}</p>
-
                 <div className="flex items-center gap-8 text-sm font-body border-t border-border pt-6">
                   <div>
                     <span className="text-muted-foreground block mb-1">Location</span>
-                    <span className="text-primary font-semibold flex items-center gap-1">
-                      <MapPin size={14} /> {selectedProject.location}
-                    </span>
+                    <span className="text-primary font-semibold flex items-center gap-1"><MapPin size={14} /> {selectedProject.location}</span>
                   </div>
                   <div>
                     <span className="text-muted-foreground block mb-1">Size</span>
-                    <span className="text-foreground font-semibold flex items-center gap-1">
-                      <Ruler size={14} /> {selectedProject.size}
-                    </span>
+                    <span className="text-foreground font-semibold flex items-center gap-1"><Ruler size={14} /> {selectedProject.size}</span>
                   </div>
                   <div>
                     <span className="text-muted-foreground block mb-1">Completed</span>
-                    <span className="text-foreground font-semibold flex items-center gap-1">
-                      <CalendarCheck size={14} /> {selectedProject.completed}
-                    </span>
+                    <span className="text-foreground font-semibold flex items-center gap-1"><CalendarCheck size={14} /> {selectedProject.completed}</span>
                   </div>
                 </div>
               </div>
