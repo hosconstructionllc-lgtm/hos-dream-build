@@ -1,5 +1,5 @@
 import { Facebook, Instagram, Youtube } from "lucide-react";
-import hosLogo from "@/assets/hos-logo-new.png";
+const hosLogo = "https://i.postimg.cc/6QQH4XWt/D7E48163-D792-43E6-94B5-5340190564A5-removebg-preview.png";
 
 const Footer = () => {
   return (
