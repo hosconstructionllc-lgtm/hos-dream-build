@@ -21,9 +21,9 @@ const Hero = () => {
           <p className="font-heading uppercase tracking-[0.3em] text-primary text-sm md:text-base mb-4">
             Building Excellence Since Day One
           </p>
-          <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl uppercase leading-none text-secondary-foreground mb-6">
-            HOS<span className="block text-primary">Construction</span>
-          </h1>
+           <h1 className="text-5xl md:text-7xl lg:text-8xl uppercase leading-none text-secondary-foreground mb-6" style={{ fontFamily: "'Bebas Neue', cursive" }}>
+             HOS<span className="block text-primary">Construction</span>
+           </h1>
           <p className="font-body text-lg md:text-xl text-secondary-foreground/70 max-w-2xl mx-auto mb-10">
             Quality craftsmanship and reliable service for residential, commercial, and renovation projects.
           </p>
