@@ -58,7 +58,7 @@ const Navbar = () => {
 
         <a
           href="#contact"
-          className="hidden md:inline-flex bg-primary text-primary-foreground font-heading uppercase tracking-wider text-sm px-6 py-3 hover:bg-accent transition-colors"
+          className="hidden md:inline-flex bg-secondary text-secondary-foreground font-heading uppercase tracking-wider text-sm px-6 py-3 hover:bg-secondary/80 transition-colors"
         >
           Get a Quote
         </a>
@@ -80,7 +80,7 @@ const Navbar = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden bg-secondary overflow-hidden"
+            className="md:hidden bg-primary overflow-hidden"
           >
             <ul className="flex flex-col items-center gap-6 py-8">
               {navLinks.map((link) => (
