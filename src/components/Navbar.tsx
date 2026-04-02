@@ -22,24 +22,30 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-primary/95 backdrop-blur-md border-b border-primary transition-all duration-300">
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? "bg-primary/95 backdrop-blur-md shadow-lg"
+          : "bg-transparent"
+      }`}
+    >
       <div
-        className="mx-auto flex items-center justify-between px-12 transition-all duration-300"
+        className="mx-auto flex items-center justify-between px-8 md:px-12 transition-all duration-300"
         style={{
           maxWidth: "1600px",
           height: scrolled ? "80px" : "100px",
         }}
       >
         <a href="#home" className="flex items-center gap-3">
-           <img
-             src={hosLogo}
-             alt="HOS Construction Logo"
-             className="w-auto transition-all duration-300"
-              style={{
-                height: scrolled ? "65px" : "110px",
-                maxWidth: "1200px",
-              }}
-           />
+          <img
+            src={hosLogo}
+            alt="HOS Construction Logo"
+            className="w-auto transition-all duration-300"
+            style={{
+              height: scrolled ? "70px" : "120px",
+              maxWidth: "1200px",
+            }}
+          />
         </a>
 
         {/* Desktop */}
@@ -48,7 +54,7 @@ const Navbar = () => {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="font-heading text-sm tracking-widest uppercase text-secondary-foreground/80 hover:text-primary transition-colors duration-300"
+                className="text-sm tracking-widest uppercase text-secondary-foreground/80 hover:text-primary transition-colors duration-300 font-medium"
               >
                 {link.label}
               </a>
@@ -58,7 +64,7 @@ const Navbar = () => {
 
         <a
           href="#contact"
-          className="hidden md:inline-flex bg-secondary text-secondary-foreground font-heading uppercase tracking-wider text-sm px-6 py-3 hover:bg-secondary/80 transition-colors"
+          className="hidden md:inline-flex bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm px-6 py-3 hover:bg-accent transition-all duration-300 rounded-sm"
         >
           Get a Quote
         </a>
@@ -80,7 +86,7 @@ const Navbar = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden bg-primary overflow-hidden"
+            className="md:hidden bg-primary/95 backdrop-blur-md overflow-hidden"
           >
             <ul className="flex flex-col items-center gap-6 py-8">
               {navLinks.map((link) => (
@@ -88,7 +94,7 @@ const Navbar = () => {
                   <a
                     href={link.href}
                     onClick={() => setOpen(false)}
-                    className="font-heading text-lg tracking-widest uppercase text-secondary-foreground/80 hover:text-primary transition-colors"
+                    className="text-lg tracking-widest uppercase text-secondary-foreground/80 hover:text-primary-foreground transition-colors font-medium"
                   >
                     {link.label}
                   </a>
@@ -98,7 +104,7 @@ const Navbar = () => {
                 <a
                   href="#contact"
                   onClick={() => setOpen(false)}
-                  className="bg-primary text-primary-foreground font-heading uppercase tracking-wider text-sm px-6 py-3"
+                  className="bg-accent text-primary-foreground font-semibold uppercase tracking-wider text-sm px-6 py-3 rounded-sm"
                 >
                   Get a Quote
                 </a>
