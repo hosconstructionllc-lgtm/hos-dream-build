@@ -18,10 +18,10 @@ const Footer = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex items-center gap-3"
+            className="flex items-center gap-4"
           >
-            <img src={hosLogo} alt="HOS Construction Logo" className="h-10 w-auto" />
-            <span className="font-heading text-background/90 uppercase tracking-wider text-sm">
+            <img src={hosLogo} alt="HOS Construction Logo" className="h-20 w-auto" />
+            <span className="text-background/90 uppercase tracking-wider text-lg font-bold">
               HOS Construction
             </span>
           </motion.div>
@@ -47,7 +47,7 @@ const Footer = () => {
                 whileHover={{ scale: 1.2, y: -2 }}
                 className="text-background/50 hover:text-primary transition-colors"
               >
-                <social.icon size={20} />
+                <social.icon size={22} />
               </motion.a>
             ))}
             <motion.a
@@ -58,7 +58,7 @@ const Footer = () => {
               whileHover={{ scale: 1.2, y: -2 }}
               className="text-background/50 hover:text-primary transition-colors"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
               </svg>
             </motion.a>
@@ -66,8 +66,8 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-background/10 mt-8 pt-8 text-center">
-          <p className="text-background/40 text-xs font-body">
-            © {new Date().getFullYear()} HOS Construction. All rights reserved.
+          <p className="text-background/40 text-xs">
+            © {new Date().getFullYear()} HOS Construction, LLC. All Rights Reserved.
           </p>
         </div>
       </div>
