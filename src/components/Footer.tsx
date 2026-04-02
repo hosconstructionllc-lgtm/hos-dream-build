@@ -18,12 +18,8 @@ const Footer = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex items-center gap-4"
           >
-            <img src={hosLogo} alt="HOS Construction Logo" className="h-20 w-auto" />
-            <span className="text-background/90 uppercase tracking-wider text-lg font-bold">
-              HOS Construction
-            </span>
+            <img src={hosLogo} alt="HOS Construction Logo" className="h-24 w-auto" />
           </motion.div>
 
           <motion.div

@@ -36,13 +36,13 @@ const Navbar = () => {
           height: scrolled ? "80px" : "100px",
         }}
       >
-        <a href="#home" className="flex items-center gap-3">
+        <a href="#home" className="flex items-center">
           <img
             src={hosLogo}
             alt="HOS Construction Logo"
             className="w-auto transition-all duration-300"
             style={{
-              height: scrolled ? "70px" : "120px",
+              height: scrolled ? "90px" : "140px",
               maxWidth: "1200px",
             }}
           />
@@ -69,7 +69,6 @@ const Navbar = () => {
           Get a Quote
         </a>
 
-        {/* Mobile toggle */}
         <button
           onClick={() => setOpen(!open)}
           className="md:hidden text-secondary-foreground"
@@ -79,7 +78,6 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {open && (
           <motion.div
