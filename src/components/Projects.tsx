@@ -52,8 +52,8 @@ const projects: Project[] = [
       "A modern Yemeni coffee shop featuring contemporary interior design with traditional Middle Eastern influences. This 2,000 sq ft space was transformed into a warm, inviting atmosphere with custom woodwork, specialty lighting, and a fully equipped coffee bar — blending culture and craftsmanship seamlessly.",
     location: "Houston, TX",
     size: "2,000 sq ft",
-    completed: "2026",
-    status: "completed",
+    completed: "In Progress",
+    status: "current",
   },
   {
     image: project2,
