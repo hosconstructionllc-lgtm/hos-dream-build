@@ -39,9 +39,9 @@ const Hero = () => {
       >
         <div className="max-w-3xl">
           {[
-            { text: "HANDS ON.", delay: 0.3 },
-            { text: "HARDWORKING.", delay: 0.5 },
-            { text: "RESULTS DRIVEN.", delay: 0.7 },
+            { text: "BUILT TO LAST.", delay: 0.3 },
+            { text: "CRAFTED WITH CARE.", delay: 0.5 },
+            { text: "DRIVEN BY QUALITY.", delay: 0.7 },
           ].map((line) => (
             <motion.h1
               key={line.text}

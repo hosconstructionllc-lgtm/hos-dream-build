@@ -52,8 +52,8 @@ const projects: Project[] = [
       "A modern Yemeni coffee shop featuring contemporary interior design with traditional Middle Eastern influences. This 2,000 sq ft space was transformed into a warm, inviting atmosphere with custom woodwork, specialty lighting, and a fully equipped coffee bar — blending culture and craftsmanship seamlessly.",
     location: "Houston, TX",
     size: "2,000 sq ft",
-    completed: "2026",
-    status: "completed",
+    completed: "In Progress",
+    status: "current",
   },
   {
     image: project2,
@@ -82,7 +82,7 @@ const projects: Project[] = [
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<"current" | "completed">("completed");
+  const [activeTab, setActiveTab] = useState<"current" | "completed">("current");
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
   const sectionRef = useRef(null);
