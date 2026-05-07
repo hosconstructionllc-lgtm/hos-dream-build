@@ -46,9 +46,13 @@
     --sidebar-ring: 214 80% 45%;
 
     /* Custom tokens */
-    --surface-dark: 220 25% 12%;
-    --surface-dark-foreground: 210 15% 90%;
+    --surface-dark: 215 50% 14%;
+    --surface-dark-foreground: 210 15% 95%;
     --blue-glow: 214 80% 45%;
+    --hero-navy: 213 60% 18%;
+    --hero-navy-deep: 215 70% 12%;
+    --cta-yellow: 45 100% 55%;
+    --cta-yellow-foreground: 220 30% 12%;
   }
 
   .dark {

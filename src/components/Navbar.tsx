@@ -25,7 +25,7 @@ const Navbar = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-primary/95 backdrop-blur-md shadow-lg"
+          ? "bg-hero-navy-deep/95 backdrop-blur-md shadow-lg"
           : "bg-transparent"
       }`}
     >
@@ -54,7 +54,7 @@ const Navbar = () => {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="text-sm tracking-widest uppercase text-secondary-foreground/80 hover:text-primary transition-colors duration-300 font-medium"
+                className="text-sm tracking-widest uppercase text-secondary-foreground/85 hover:text-cta-yellow transition-colors duration-300 font-medium"
               >
                 {link.label}
               </a>
@@ -64,9 +64,9 @@ const Navbar = () => {
 
         <a
           href="#contact"
-          className="hidden md:inline-flex bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-sm px-6 py-3 hover:bg-accent transition-all duration-300 rounded-sm"
+          className="hidden md:inline-flex bg-cta-yellow text-cta-yellow-foreground font-bold uppercase tracking-wider text-sm px-6 py-3 hover:brightness-110 transition-all duration-300 rounded-sm"
         >
-          Get a Quote
+          Project Inquiry
         </a>
 
         <button

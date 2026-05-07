@@ -61,6 +61,14 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        "hero-navy": {
+          DEFAULT: "hsl(var(--hero-navy))",
+          deep: "hsl(var(--hero-navy-deep))",
+        },
+        "cta-yellow": {
+          DEFAULT: "hsl(var(--cta-yellow))",
+          foreground: "hsl(var(--cta-yellow-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

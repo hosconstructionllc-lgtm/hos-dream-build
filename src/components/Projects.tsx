@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { MapPin, Ruler, CalendarCheck, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, Ruler, CalendarCheck, X, ChevronLeft, ChevronRight, Clock, CheckCircle2 } from "lucide-react";
 import project1 from "@/assets/project-1.jpg";
 import project2 from "@/assets/project-2.jpg";
 import project3 from "@/assets/project-3.jpg";
@@ -19,6 +19,7 @@ interface Project {
   location: string;
   size: string;
   completed: string;
+  status: "current" | "completed";
 }
 
 const projects: Project[] = [
@@ -52,6 +53,7 @@ const projects: Project[] = [
     location: "Houston, TX",
     size: "2,000 sq ft",
     completed: "2026",
+    status: "completed",
   },
   {
     image: project2,
@@ -62,6 +64,7 @@ const projects: Project[] = [
     location: "",
     size: "",
     completed: "",
+    status: "current",
   },
   {
     image: project3,
@@ -72,15 +75,30 @@ const projects: Project[] = [
     location: "",
     size: "",
     completed: "",
+    status: "current",
   },
 ];
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState<"current" | "completed">("completed");
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
   const sectionRef = useRef(null);
+
+  const counts = useMemo(
+    () => ({
+      current: projects.filter((p) => p.status === "current").length,
+      completed: projects.filter((p) => p.status === "completed").length,
+    }),
+    []
+  );
+
+  const visibleProjects = useMemo(
+    () => projects.filter((p) => p.status === activeTab),
+    [activeTab]
+  );
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -149,8 +167,66 @@ const Projects = () => {
             />
           </motion.div>
 
+          {/* Tabs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex justify-center mb-12"
+          >
+            <div className="bg-background rounded-full p-2 inline-flex items-center gap-2 shadow-lg">
+              {[
+                { key: "current" as const, label: "Current Projects", count: counts.current, Icon: Clock },
+                { key: "completed" as const, label: "Completed Projects", count: counts.completed, Icon: CheckCircle2 },
+              ].map(({ key, label, count, Icon }) => {
+                const active = activeTab === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setActiveTab(key)}
+                    className={`relative flex items-center gap-2 px-5 md:px-7 py-3 rounded-full font-semibold text-sm md:text-base transition-colors duration-300 ${
+                      active ? "text-primary-foreground" : "text-foreground hover:text-primary"
+                    }`}
+                  >
+                    {active && (
+                      <motion.div
+                        layoutId="tab-pill"
+                        className="absolute inset-0 bg-primary rounded-full shadow-md"
+                        transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
+                      />
+                    )}
+                    <Icon size={18} className="relative z-10" />
+                    <span className="relative z-10">{label}</span>
+                    <span
+                      className={`relative z-10 inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-full text-xs font-bold ${
+                        active ? "bg-primary-foreground/25 text-primary-foreground" : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+
+          {visibleProjects.filter(p => p.description).length === 0 ? (
+            <motion.div
+              key={activeTab + "-empty"}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-20"
+            >
+              <p className="font-body text-secondary-foreground/70 text-lg">
+                {activeTab === "current"
+                  ? "Exciting new projects are currently in the works. Check back soon!"
+                  : "Completed projects will appear here."}
+              </p>
+            </motion.div>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {projects.filter(p => p.description).map((p, i) => (
+            {visibleProjects.filter(p => p.description).map((p, i) => (
               <motion.div
                 key={p.title}
                 initial={{ opacity: 0, y: 80, scale: 0.95 }}
@@ -214,6 +290,7 @@ const Projects = () => {
               </motion.div>
             ))}
           </div>
+          )}
         </motion.div>
       </section>
 
