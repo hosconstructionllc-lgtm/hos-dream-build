@@ -82,7 +82,7 @@ const projects: Project[] = [
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<"current" | "completed">("completed");
+  const [activeTab, setActiveTab] = useState<"current" | "completed">("current");
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
   const sectionRef = useRef(null);
