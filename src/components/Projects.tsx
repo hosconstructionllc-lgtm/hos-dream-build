@@ -290,6 +290,7 @@ const Projects = () => {
               </motion.div>
             ))}
           </div>
+          )}
         </motion.div>
       </section>
 
