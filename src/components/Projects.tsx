@@ -53,6 +53,7 @@ const projects: Project[] = [
     location: "Houston, TX",
     size: "2,000 sq ft",
     completed: "2026",
+    status: "completed",
   },
   {
     image: project2,
@@ -63,6 +64,7 @@ const projects: Project[] = [
     location: "",
     size: "",
     completed: "",
+    status: "current",
   },
   {
     image: project3,
@@ -73,6 +75,7 @@ const projects: Project[] = [
     location: "",
     size: "",
     completed: "",
+    status: "current",
   },
 ];
 
