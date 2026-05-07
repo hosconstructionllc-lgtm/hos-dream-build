@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { MapPin, Ruler, CalendarCheck, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, Ruler, CalendarCheck, X, ChevronLeft, ChevronRight, Clock, CheckCircle2 } from "lucide-react";
 import project1 from "@/assets/project-1.jpg";
 import project2 from "@/assets/project-2.jpg";
 import project3 from "@/assets/project-3.jpg";
@@ -19,6 +19,7 @@ interface Project {
   location: string;
   size: string;
   completed: string;
+  status: "current" | "completed";
 }
 
 const projects: Project[] = [
