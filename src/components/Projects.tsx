@@ -89,8 +89,8 @@ const Projects = () => {
 
   const counts = useMemo(
     () => ({
-      current: projects.filter((p) => p.status === "current").length,
-      completed: projects.filter((p) => p.status === "completed").length,
+      current: projects.filter((p) => p.status === "current" && p.description).length,
+      completed: projects.filter((p) => p.status === "completed" && p.description).length,
     }),
     []
   );
