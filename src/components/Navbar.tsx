@@ -24,26 +24,21 @@ const Navbar = () => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-hero-navy-deep/95 backdrop-blur-md shadow-lg"
-          : "bg-transparent"
+        scrolled ? "bg-hero-navy-deep/95 backdrop-blur-md shadow-lg" : "bg-hero-navy-deep/70 backdrop-blur-sm"
       }`}
     >
-      {/* Top info bar */}
-      <div
-        className={`w-full bg-hero-navy-deep text-secondary-foreground/90 border-b border-secondary-foreground/10 overflow-hidden transition-all duration-300 ${
-          scrolled ? "max-h-0 opacity-0" : "max-h-12 opacity-100"
-        }`}
-      >
+      {/* Top info bar - always visible */}
+      <div className="w-full bg-hero-navy-deep text-secondary-foreground/90 border-b border-secondary-foreground/10">
         <div className="mx-auto flex items-center justify-between px-6 md:px-12 py-2 text-xs md:text-sm" style={{ maxWidth: "1600px" }}>
           <div className="flex items-center gap-4 md:gap-8">
             <a href="tel:+12819289967" className="flex items-center gap-2 hover:text-cta-yellow transition-colors">
               <Phone size={14} />
               <span className="tracking-wide">(281) 928-9967</span>
             </a>
-            <a href="mailto:contact@hosconstructiontx.com" className="hidden sm:flex items-center gap-2 hover:text-cta-yellow transition-colors">
+            <a href="mailto:contact@hosconstructiontx.com" className="flex items-center gap-2 hover:text-cta-yellow transition-colors">
               <Mail size={14} />
-              <span className="tracking-wide">contact@hosconstructiontx.com</span>
+              <span className="tracking-wide hidden sm:inline">contact@hosconstructiontx.com</span>
+              <span className="tracking-wide sm:hidden">Email</span>
             </a>
           </div>
           <div className="hidden md:block text-secondary-foreground/60 tracking-widest uppercase text-[10px]">
@@ -53,26 +48,25 @@ const Navbar = () => {
       </div>
 
       <div
-        className="mx-auto flex items-center justify-between px-8 md:px-12 transition-all duration-300"
+        className="mx-auto flex items-center justify-between px-6 md:px-12 gap-6 transition-all duration-300"
         style={{
           maxWidth: "1600px",
-          height: scrolled ? "80px" : "100px",
+          height: scrolled ? "110px" : "150px",
         }}
       >
-        <a href="#home" className="flex items-center">
+        <a href="#home" className="flex items-center flex-shrink-0">
           <img
             src={hosLogo}
             alt="HOS Construction Logo"
-            className="w-auto transition-all duration-300"
+            className="w-auto transition-all duration-300 object-contain"
             style={{
-              height: scrolled ? "90px" : "140px",
-              maxWidth: "1200px",
+              height: scrolled ? "95px" : "135px",
             }}
           />
         </a>
 
         {/* Desktop */}
-        <ul className="hidden md:flex items-center gap-8">
+        <ul className="hidden lg:flex items-center gap-8">
           {navLinks.map((link) => (
             <li key={link.href}>
               <a
@@ -87,14 +81,14 @@ const Navbar = () => {
 
         <a
           href="#contact"
-          className="hidden md:inline-flex bg-cta-yellow text-cta-yellow-foreground font-bold uppercase tracking-wider text-sm px-6 py-3 hover:brightness-110 transition-all duration-300 rounded-sm"
+          className="hidden lg:inline-flex bg-cta-yellow text-cta-yellow-foreground font-bold uppercase tracking-wider text-sm px-6 py-3 hover:brightness-110 transition-all duration-300 rounded-sm"
         >
           Project Inquiry
         </a>
 
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden text-secondary-foreground"
+          className="lg:hidden text-secondary-foreground"
           aria-label="Toggle menu"
         >
           {open ? <X size={28} /> : <Menu size={28} />}
@@ -107,7 +101,7 @@ const Navbar = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden bg-primary/95 backdrop-blur-md overflow-hidden"
+            className="lg:hidden bg-hero-navy-deep/95 backdrop-blur-md overflow-hidden"
           >
             <ul className="flex flex-col items-center gap-6 py-8">
               {navLinks.map((link) => (
@@ -115,7 +109,7 @@ const Navbar = () => {
                   <a
                     href={link.href}
                     onClick={() => setOpen(false)}
-                    className="text-lg tracking-widest uppercase text-secondary-foreground/80 hover:text-primary-foreground transition-colors font-medium"
+                    className="text-lg tracking-widest uppercase text-secondary-foreground/80 hover:text-cta-yellow transition-colors font-medium"
                   >
                     {link.label}
                   </a>
@@ -125,7 +119,7 @@ const Navbar = () => {
                 <a
                   href="#contact"
                   onClick={() => setOpen(false)}
-                  className="bg-accent text-primary-foreground font-semibold uppercase tracking-wider text-sm px-6 py-3 rounded-sm"
+                  className="bg-cta-yellow text-cta-yellow-foreground font-semibold uppercase tracking-wider text-sm px-6 py-3 rounded-sm"
                 >
                   Get a Quote
                 </a>

@@ -19,7 +19,7 @@ const Hero = () => {
     <section
       id="home"
       ref={ref}
-      className="relative min-h-screen flex items-center overflow-hidden bg-hero-navy-deep"
+      className="relative min-h-screen flex items-center overflow-hidden bg-hero-navy-deep pt-[190px] pb-16"
     >
       <motion.div
         className="absolute inset-0 bg-cover bg-center"
@@ -29,9 +29,10 @@ const Hero = () => {
           scale,
         }}
       />
-      {/* Navy overlay - heavy on left, fading right */}
-      <div className="absolute inset-0 bg-gradient-to-r from-hero-navy-deep via-hero-navy-deep/85 to-hero-navy/30" />
-      <div className="absolute inset-0 bg-gradient-to-b from-hero-navy-deep/40 via-transparent to-hero-navy-deep/60" />
+      {/* Lighter navy overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-hero-navy-deep/85 via-hero-navy/55 to-hero-navy/10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-hero-navy-deep/20 via-transparent to-hero-navy-deep/30" />
+
 
       <motion.div
         className="relative z-10 container mx-auto px-6 md:px-12 lg:px-20"
