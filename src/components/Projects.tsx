@@ -268,57 +268,54 @@ const Projects = () => {
                 }}
                 whileHover={{ y: -10 }}
                 onClick={() => openProject(p)}
-                className="bg-background rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500 cursor-pointer group"
+                className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500 cursor-pointer group aspect-[4/5]"
               >
-                <div className="relative overflow-hidden">
-                  <motion.img
-                    src={p.image}
-                    alt={p.title}
-                    className="w-full aspect-[4/3] object-cover"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-primary/60 to-primary/80 flex items-center justify-center">
-                    <span className="font-heading text-lg md:text-xl uppercase tracking-wider text-primary-foreground text-center px-4">
-                      {p.category}
-                    </span>
-                  </div>
-                </div>
+                <motion.img
+                  src={p.image}
+                  alt={p.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  whileHover={{ scale: 1.08 }}
+                  transition={{ duration: 0.6 }}
+                  loading="lazy"
+                />
+                {/* Dark gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-hero-navy-deep via-hero-navy-deep/60 to-transparent" />
 
-                <div className="p-6">
-                  <h3 className="font-heading text-xl md:text-2xl text-foreground mb-3">{p.title}</h3>
-                  {p.description && (
-                    <p className="font-body text-muted-foreground text-sm leading-relaxed mb-5 line-clamp-3">
-                      {p.description}
-                    </p>
-                  )}
-                  {p.location && (
-                    <div className="flex items-center gap-6 text-xs font-body border-t border-border pt-4">
-                      <div>
-                        <span className="text-muted-foreground block mb-1">Location</span>
-                        <span className="text-primary font-semibold flex items-center gap-1">
-                          <MapPin size={12} /> {p.location}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground block mb-1">Size</span>
-                        <span className="text-foreground font-semibold flex items-center gap-1">
-                          <Ruler size={12} /> {p.size}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground block mb-1">Completed</span>
-                        <span className="text-foreground font-semibold flex items-center gap-1">
-                          <CalendarCheck size={12} /> {p.completed}
-                        </span>
-                      </div>
+                {/* Status badge */}
+                {p.status === "current" && (
+                  <div className="absolute top-4 left-4 bg-cta-yellow text-cta-yellow-foreground text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md">
+                    In Progress
+                  </div>
+                )}
+                {p.status === "completed" && (
+                  <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md">
+                    Completed
+                  </div>
+                )}
+
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-secondary-foreground">
+                  <h3 className="font-heading text-xl md:text-2xl uppercase tracking-wide mb-4 drop-shadow">
+                    {p.title}
+                  </h3>
+                  {(p.projectStart || p.projectedCompletion) && (
+                    <div className="space-y-1 mb-5 text-sm font-body text-secondary-foreground/90">
+                      {p.projectStart && (
+                        <p><span className="font-semibold">Project Start:</span> {p.projectStart}</p>
+                      )}
+                      {p.projectedCompletion && (
+                        <p><span className="font-semibold">Projected Completion:</span> {p.projectedCompletion}</p>
+                      )}
                     </div>
                   )}
+                  <span className="inline-flex items-center gap-2 border border-secondary-foreground/70 text-secondary-foreground px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-widest group-hover:bg-cta-yellow group-hover:text-cta-yellow-foreground group-hover:border-cta-yellow transition-all duration-300">
+                    Learn More <ArrowRight size={14} />
+                  </span>
                 </div>
               </motion.div>
             ))}
           </div>
+
           )}
         </motion.div>
       </section>
