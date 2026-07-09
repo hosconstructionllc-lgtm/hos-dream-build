@@ -407,10 +407,17 @@ const Projects = () => {
               </div>
 
               <div className="p-8 overflow-y-auto flex-1">
-                <span className="font-heading text-xs uppercase tracking-widest text-primary">{selectedProject.category}</span>
-                <h2 className="font-heading text-3xl md:text-4xl text-foreground mt-2 mb-4">{selectedProject.title}</h2>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="font-heading text-xs uppercase tracking-widest text-primary">{selectedProject.category}</span>
+                  {selectedProject.status === "current" && (
+                    <span className="bg-cta-yellow text-cta-yellow-foreground text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+                      In Progress
+                    </span>
+                  )}
+                </div>
+                <h2 className="font-heading text-3xl md:text-4xl text-foreground mt-1 mb-4">{selectedProject.title}</h2>
                 <p className="font-body text-muted-foreground leading-relaxed mb-8">{selectedProject.description}</p>
-                <div className="flex items-center gap-8 text-sm font-body border-t border-border pt-6">
+                <div className="flex flex-wrap items-center gap-8 text-sm font-body border-t border-border pt-6">
                   <div>
                     <span className="text-muted-foreground block mb-1">Location</span>
                     <span className="text-primary font-semibold flex items-center gap-1"><MapPin size={14} /> {selectedProject.location}</span>
@@ -420,10 +427,79 @@ const Projects = () => {
                     <span className="text-foreground font-semibold flex items-center gap-1"><Ruler size={14} /> {selectedProject.size}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block mb-1">Completed</span>
+                    <span className="text-muted-foreground block mb-1">Status</span>
                     <span className="text-foreground font-semibold flex items-center gap-1"><CalendarCheck size={14} /> {selectedProject.completed}</span>
                   </div>
                 </div>
+
+                {selectedProject.timeline && selectedProject.timeline.length > 0 && (
+                  <div className="mt-12">
+                    <p className="font-heading uppercase tracking-[0.4em] text-primary text-xs mb-2 text-center">Progress Updates</p>
+                    <h3 className="font-heading text-2xl md:text-3xl text-foreground mb-10 text-center">Project Timeline</h3>
+
+                    <div className="relative">
+                      {/* Vertical line */}
+                      <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-border -translate-x-1/2" />
+
+                      <div className="space-y-10">
+                        {selectedProject.timeline.map((entry, idx) => {
+                          const left = idx % 2 === 0;
+                          return (
+                            <motion.div
+                              key={idx}
+                              initial={{ opacity: 0, y: 30 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true, margin: "-50px" }}
+                              transition={{ duration: 0.6, delay: idx * 0.1 }}
+                              className="relative grid grid-cols-2 gap-8 items-start"
+                            >
+                              {/* Dot */}
+                              <div className="absolute left-1/2 top-4 w-3 h-3 rounded-full bg-primary -translate-x-1/2 ring-4 ring-background z-10" />
+
+                              {left ? (
+                                <>
+                                  <div className="pr-4">
+                                    <div className="bg-background border border-border rounded-lg overflow-hidden shadow-md">
+                                      {entry.image && (
+                                        <img src={entry.image} alt={entry.date} className="w-full aspect-video object-cover" loading="lazy" />
+                                      )}
+                                      <div className="p-4">
+                                        <span className="inline-block bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded mb-2">
+                                          {entry.date}
+                                        </span>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">{entry.text}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div />
+                                </>
+                              ) : (
+                                <>
+                                  <div />
+                                  <div className="pl-4">
+                                    <div className="bg-background border border-border rounded-lg overflow-hidden shadow-md">
+                                      {entry.image && (
+                                        <img src={entry.image} alt={entry.date} className="w-full aspect-video object-cover" loading="lazy" />
+                                      )}
+                                      <div className="p-4">
+                                        <span className="inline-block bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded mb-2">
+                                          {entry.date}
+                                        </span>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">{entry.text}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               </div>
             </motion.div>
           </motion.div>
