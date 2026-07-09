@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { MapPin, Ruler, CalendarCheck, X, ChevronLeft, ChevronRight, Clock, CheckCircle2 } from "lucide-react";
+import { MapPin, Ruler, CalendarCheck, X, ChevronLeft, ChevronRight, Clock, CheckCircle2, ArrowRight } from "lucide-react";
 import project1 from "@/assets/project-1.jpg";
 import project2 from "@/assets/project-2.jpg";
 import project3 from "@/assets/project-3.jpg";
@@ -8,6 +8,12 @@ import project3 from "@/assets/project-3.jpg";
 interface MediaItem {
   type: "image" | "youtube";
   src: string;
+}
+
+interface TimelineEntry {
+  date: string;
+  image?: string;
+  text: string;
 }
 
 interface Project {
@@ -19,7 +25,10 @@ interface Project {
   location: string;
   size: string;
   completed: string;
+  projectStart?: string;
+  projectedCompletion?: string;
   status: "current" | "completed";
+  timeline?: TimelineEntry[];
 }
 
 const projects: Project[] = [
@@ -53,7 +62,26 @@ const projects: Project[] = [
     location: "Houston, TX",
     size: "2,000 sq ft",
     completed: "In Progress",
+    projectStart: "March 2026",
+    projectedCompletion: "August 2026",
     status: "current",
+    timeline: [
+      {
+        date: "June 2026",
+        image: "https://i.postimg.cc/k59btn3s/IMG-6506.jpg",
+        text: "Interior finish work is progressing well — custom woodwork installed, specialty lighting mounted, and coffee bar framing underway.",
+      },
+      {
+        date: "May 2026",
+        image: "https://i.postimg.cc/Sxc9sn5V/IMG-6503.jpg",
+        text: "Framing completed and MEP rough-ins passed inspection. Preparing for drywall and interior detailing.",
+      },
+      {
+        date: "April 2026",
+        image: "https://i.postimg.cc/cCJ7tdYG/IMG-5483.jpg",
+        text: "Site demolition complete and structural build-out officially began on the 2,000 sq ft commercial space.",
+      },
+    ],
   },
   {
     image: project2,
@@ -78,6 +106,7 @@ const projects: Project[] = [
     status: "current",
   },
 ];
+
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -239,57 +268,54 @@ const Projects = () => {
                 }}
                 whileHover={{ y: -10 }}
                 onClick={() => openProject(p)}
-                className="bg-background rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500 cursor-pointer group"
+                className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500 cursor-pointer group aspect-[4/5]"
               >
-                <div className="relative overflow-hidden">
-                  <motion.img
-                    src={p.image}
-                    alt={p.title}
-                    className="w-full aspect-[4/3] object-cover"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-primary/60 to-primary/80 flex items-center justify-center">
-                    <span className="font-heading text-lg md:text-xl uppercase tracking-wider text-primary-foreground text-center px-4">
-                      {p.category}
-                    </span>
-                  </div>
-                </div>
+                <motion.img
+                  src={p.image}
+                  alt={p.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  whileHover={{ scale: 1.08 }}
+                  transition={{ duration: 0.6 }}
+                  loading="lazy"
+                />
+                {/* Dark gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-hero-navy-deep via-hero-navy-deep/60 to-transparent" />
 
-                <div className="p-6">
-                  <h3 className="font-heading text-xl md:text-2xl text-foreground mb-3">{p.title}</h3>
-                  {p.description && (
-                    <p className="font-body text-muted-foreground text-sm leading-relaxed mb-5 line-clamp-3">
-                      {p.description}
-                    </p>
-                  )}
-                  {p.location && (
-                    <div className="flex items-center gap-6 text-xs font-body border-t border-border pt-4">
-                      <div>
-                        <span className="text-muted-foreground block mb-1">Location</span>
-                        <span className="text-primary font-semibold flex items-center gap-1">
-                          <MapPin size={12} /> {p.location}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground block mb-1">Size</span>
-                        <span className="text-foreground font-semibold flex items-center gap-1">
-                          <Ruler size={12} /> {p.size}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-muted-foreground block mb-1">Completed</span>
-                        <span className="text-foreground font-semibold flex items-center gap-1">
-                          <CalendarCheck size={12} /> {p.completed}
-                        </span>
-                      </div>
+                {/* Status badge */}
+                {p.status === "current" && (
+                  <div className="absolute top-4 left-4 bg-cta-yellow text-cta-yellow-foreground text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md">
+                    In Progress
+                  </div>
+                )}
+                {p.status === "completed" && (
+                  <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md">
+                    Completed
+                  </div>
+                )}
+
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-secondary-foreground">
+                  <h3 className="font-heading text-xl md:text-2xl uppercase tracking-wide mb-4 drop-shadow">
+                    {p.title}
+                  </h3>
+                  {(p.projectStart || p.projectedCompletion) && (
+                    <div className="space-y-1 mb-5 text-sm font-body text-secondary-foreground/90">
+                      {p.projectStart && (
+                        <p><span className="font-semibold">Project Start:</span> {p.projectStart}</p>
+                      )}
+                      {p.projectedCompletion && (
+                        <p><span className="font-semibold">Projected Completion:</span> {p.projectedCompletion}</p>
+                      )}
                     </div>
                   )}
+                  <span className="inline-flex items-center gap-2 border border-secondary-foreground/70 text-secondary-foreground px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-widest group-hover:bg-cta-yellow group-hover:text-cta-yellow-foreground group-hover:border-cta-yellow transition-all duration-300">
+                    Learn More <ArrowRight size={14} />
+                  </span>
                 </div>
               </motion.div>
             ))}
           </div>
+
           )}
         </motion.div>
       </section>
@@ -381,10 +407,17 @@ const Projects = () => {
               </div>
 
               <div className="p-8 overflow-y-auto flex-1">
-                <span className="font-heading text-xs uppercase tracking-widest text-primary">{selectedProject.category}</span>
-                <h2 className="font-heading text-3xl md:text-4xl text-foreground mt-2 mb-4">{selectedProject.title}</h2>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="font-heading text-xs uppercase tracking-widest text-primary">{selectedProject.category}</span>
+                  {selectedProject.status === "current" && (
+                    <span className="bg-cta-yellow text-cta-yellow-foreground text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+                      In Progress
+                    </span>
+                  )}
+                </div>
+                <h2 className="font-heading text-3xl md:text-4xl text-foreground mt-1 mb-4">{selectedProject.title}</h2>
                 <p className="font-body text-muted-foreground leading-relaxed mb-8">{selectedProject.description}</p>
-                <div className="flex items-center gap-8 text-sm font-body border-t border-border pt-6">
+                <div className="flex flex-wrap items-center gap-8 text-sm font-body border-t border-border pt-6">
                   <div>
                     <span className="text-muted-foreground block mb-1">Location</span>
                     <span className="text-primary font-semibold flex items-center gap-1"><MapPin size={14} /> {selectedProject.location}</span>
@@ -394,11 +427,79 @@ const Projects = () => {
                     <span className="text-foreground font-semibold flex items-center gap-1"><Ruler size={14} /> {selectedProject.size}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block mb-1">Completed</span>
+                    <span className="text-muted-foreground block mb-1">Status</span>
                     <span className="text-foreground font-semibold flex items-center gap-1"><CalendarCheck size={14} /> {selectedProject.completed}</span>
                   </div>
                 </div>
+
+                {selectedProject.timeline && selectedProject.timeline.length > 0 && (
+                  <div className="mt-12">
+                    <p className="font-heading uppercase tracking-[0.4em] text-primary text-xs mb-2 text-center">Progress Updates</p>
+                    <h3 className="font-heading text-2xl md:text-3xl text-foreground mb-10 text-center">Project Timeline</h3>
+
+                    <div className="relative">
+                      {/* Vertical line */}
+                      <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-border -translate-x-1/2" />
+
+                      <div className="space-y-10">
+                        {selectedProject.timeline.map((entry, idx) => {
+                          const left = idx % 2 === 0;
+                          return (
+                            <motion.div
+                              key={idx}
+                              initial={{ opacity: 0, y: 30 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true, margin: "-50px" }}
+                              transition={{ duration: 0.6, delay: idx * 0.1 }}
+                              className="relative grid grid-cols-2 gap-8 items-start"
+                            >
+                              {/* Dot */}
+                              <div className="absolute left-1/2 top-4 w-3 h-3 rounded-full bg-primary -translate-x-1/2 ring-4 ring-background z-10" />
+
+                              {left ? (
+                                <>
+                                  <div className="pr-4">
+                                    <div className="bg-background border border-border rounded-lg overflow-hidden shadow-md">
+                                      {entry.image && (
+                                        <img src={entry.image} alt={entry.date} className="w-full aspect-video object-cover" loading="lazy" />
+                                      )}
+                                      <div className="p-4">
+                                        <span className="inline-block bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded mb-2">
+                                          {entry.date}
+                                        </span>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">{entry.text}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div />
+                                </>
+                              ) : (
+                                <>
+                                  <div />
+                                  <div className="pl-4">
+                                    <div className="bg-background border border-border rounded-lg overflow-hidden shadow-md">
+                                      {entry.image && (
+                                        <img src={entry.image} alt={entry.date} className="w-full aspect-video object-cover" loading="lazy" />
+                                      )}
+                                      <div className="p-4">
+                                        <span className="inline-block bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded mb-2">
+                                          {entry.date}
+                                        </span>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">{entry.text}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
+
             </motion.div>
           </motion.div>
         )}
