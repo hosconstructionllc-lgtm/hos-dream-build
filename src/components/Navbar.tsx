@@ -29,6 +29,29 @@ const Navbar = () => {
           : "bg-transparent"
       }`}
     >
+      {/* Top info bar */}
+      <div
+        className={`w-full bg-hero-navy-deep text-secondary-foreground/90 border-b border-secondary-foreground/10 overflow-hidden transition-all duration-300 ${
+          scrolled ? "max-h-0 opacity-0" : "max-h-12 opacity-100"
+        }`}
+      >
+        <div className="mx-auto flex items-center justify-between px-6 md:px-12 py-2 text-xs md:text-sm" style={{ maxWidth: "1600px" }}>
+          <div className="flex items-center gap-4 md:gap-8">
+            <a href="tel:+12819289967" className="flex items-center gap-2 hover:text-cta-yellow transition-colors">
+              <Phone size={14} />
+              <span className="tracking-wide">(281) 928-9967</span>
+            </a>
+            <a href="mailto:contact@hosconstructiontx.com" className="hidden sm:flex items-center gap-2 hover:text-cta-yellow transition-colors">
+              <Mail size={14} />
+              <span className="tracking-wide">contact@hosconstructiontx.com</span>
+            </a>
+          </div>
+          <div className="hidden md:block text-secondary-foreground/60 tracking-widest uppercase text-[10px]">
+            Houston, TX
+          </div>
+        </div>
+      </div>
+
       <div
         className="mx-auto flex items-center justify-between px-8 md:px-12 transition-all duration-300"
         style={{
