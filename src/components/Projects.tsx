@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { MapPin, Ruler, CalendarCheck, X, ChevronLeft, ChevronRight, Clock, CheckCircle2 } from "lucide-react";
+import { MapPin, Ruler, CalendarCheck, X, ChevronLeft, ChevronRight, Clock, CheckCircle2, ArrowRight } from "lucide-react";
 import project1 from "@/assets/project-1.jpg";
 import project2 from "@/assets/project-2.jpg";
 import project3 from "@/assets/project-3.jpg";
@@ -8,6 +8,12 @@ import project3 from "@/assets/project-3.jpg";
 interface MediaItem {
   type: "image" | "youtube";
   src: string;
+}
+
+interface TimelineEntry {
+  date: string;
+  image?: string;
+  text: string;
 }
 
 interface Project {
@@ -19,7 +25,10 @@ interface Project {
   location: string;
   size: string;
   completed: string;
+  projectStart?: string;
+  projectedCompletion?: string;
   status: "current" | "completed";
+  timeline?: TimelineEntry[];
 }
 
 const projects: Project[] = [
@@ -53,7 +62,26 @@ const projects: Project[] = [
     location: "Houston, TX",
     size: "2,000 sq ft",
     completed: "In Progress",
+    projectStart: "March 2026",
+    projectedCompletion: "August 2026",
     status: "current",
+    timeline: [
+      {
+        date: "June 2026",
+        image: "https://i.postimg.cc/k59btn3s/IMG-6506.jpg",
+        text: "Interior finish work is progressing well — custom woodwork installed, specialty lighting mounted, and coffee bar framing underway.",
+      },
+      {
+        date: "May 2026",
+        image: "https://i.postimg.cc/Sxc9sn5V/IMG-6503.jpg",
+        text: "Framing completed and MEP rough-ins passed inspection. Preparing for drywall and interior detailing.",
+      },
+      {
+        date: "April 2026",
+        image: "https://i.postimg.cc/cCJ7tdYG/IMG-5483.jpg",
+        text: "Site demolition complete and structural build-out officially began on the 2,000 sq ft commercial space.",
+      },
+    ],
   },
   {
     image: project2,
@@ -78,6 +106,7 @@ const projects: Project[] = [
     status: "current",
   },
 ];
+
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
