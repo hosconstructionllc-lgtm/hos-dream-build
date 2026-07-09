@@ -500,7 +500,6 @@ const Projects = () => {
                 )}
               </div>
 
-              </div>
             </motion.div>
           </motion.div>
         )}
