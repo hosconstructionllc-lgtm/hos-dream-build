@@ -19,7 +19,7 @@ const Hero = () => {
     <section
       id="home"
       ref={ref}
-      className="relative min-h-screen flex items-center overflow-hidden bg-hero-navy-deep pt-[190px] pb-16"
+      className="relative min-h-screen flex items-center overflow-hidden bg-hero-navy-deep pt-[140px] pb-16"
     >
       <motion.div
         className="absolute inset-0 bg-cover bg-center"
