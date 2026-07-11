@@ -51,19 +51,22 @@ const Navbar = () => {
         className="mx-auto flex items-center justify-between px-6 md:px-12 gap-6 transition-all duration-300"
         style={{
           maxWidth: "1600px",
-          height: scrolled ? "110px" : "150px",
+          height: scrolled ? "72px" : "88px",
         }}
       >
-        <a href="#home" className="flex items-center flex-shrink-0">
+        <a href="#home" className="flex items-center flex-shrink-0 relative">
           <img
             src={hosLogo}
             alt="HOS Construction Logo"
-            className="w-auto transition-all duration-300 object-contain"
+            className="w-auto transition-all duration-300 object-contain relative z-10"
             style={{
-              height: scrolled ? "95px" : "135px",
+              height: scrolled ? "110px" : "150px",
+              marginTop: "8px",
+              marginBottom: "-24px",
             }}
           />
         </a>
+
 
         {/* Desktop */}
         <ul className="hidden lg:flex items-center gap-8">

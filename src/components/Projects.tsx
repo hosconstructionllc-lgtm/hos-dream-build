@@ -318,19 +318,18 @@ const Projects = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 bg-secondary/90 backdrop-blur-md flex items-center justify-center p-4"
-            onClick={closeProject}
+            className="fixed inset-0 z-[100] bg-background overflow-y-auto"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.85, y: 40 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.85, y: 40 }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
               transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="bg-background rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
-              onClick={(e) => e.stopPropagation()}
+              className="min-h-screen w-full bg-background flex flex-col"
             >
+
               <div
-                className="relative flex-shrink-0"
+                className="relative flex-shrink-0 bg-black"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -348,22 +347,23 @@ const Projects = () => {
                         src={selectedProject.media[currentIndex].src}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
-                        className="w-full aspect-video rounded-t-lg"
+                        className="w-full h-[60vh] md:h-[75vh]"
                       />
                     ) : (
                       <img
                         src={selectedProject.media[currentIndex]?.src}
                         alt={selectedProject.title}
-                        className="w-full aspect-video object-contain rounded-t-lg bg-black"
+                        className="w-full h-[60vh] md:h-[75vh] object-contain bg-black"
                       />
                     )}
                   </motion.div>
                 </AnimatePresence>
                 <button
                   onClick={closeProject}
-                  className="absolute top-4 right-4 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors z-10"
+                  aria-label="Close"
+                  className="fixed top-6 right-6 bg-background/90 text-foreground p-3 rounded-full hover:bg-background transition-colors z-[110] shadow-lg"
                 >
-                  <X size={20} />
+                  <X size={22} />
                 </button>
 
                 {selectedProject.media.length > 1 && (
@@ -396,7 +396,8 @@ const Projects = () => {
                 )}
               </div>
 
-              <div className="p-8 overflow-y-auto flex-1">
+              <div className="max-w-5xl mx-auto w-full px-6 md:px-12 py-12 md:py-16">
+
                 <div className="flex items-center gap-3 mb-2">
                   <span className="font-heading text-xs uppercase tracking-widest text-primary">{selectedProject.category}</span>
                   {selectedProject.status === "current" && (
