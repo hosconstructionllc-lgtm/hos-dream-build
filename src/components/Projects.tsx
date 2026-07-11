@@ -329,7 +329,7 @@ const Projects = () => {
             >
 
               <div
-                className="relative flex-shrink-0"
+                className="relative flex-shrink-0 bg-black"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -347,22 +347,23 @@ const Projects = () => {
                         src={selectedProject.media[currentIndex].src}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
-                        className="w-full aspect-video rounded-t-lg"
+                        className="w-full h-[60vh] md:h-[75vh]"
                       />
                     ) : (
                       <img
                         src={selectedProject.media[currentIndex]?.src}
                         alt={selectedProject.title}
-                        className="w-full aspect-video object-contain rounded-t-lg bg-black"
+                        className="w-full h-[60vh] md:h-[75vh] object-contain bg-black"
                       />
                     )}
                   </motion.div>
                 </AnimatePresence>
                 <button
                   onClick={closeProject}
-                  className="absolute top-4 right-4 bg-secondary/80 text-secondary-foreground p-2 rounded-full hover:bg-secondary transition-colors z-10"
+                  aria-label="Close"
+                  className="fixed top-6 right-6 bg-background/90 text-foreground p-3 rounded-full hover:bg-background transition-colors z-[110] shadow-lg"
                 >
-                  <X size={20} />
+                  <X size={22} />
                 </button>
 
                 {selectedProject.media.length > 1 && (
@@ -395,7 +396,8 @@ const Projects = () => {
                 )}
               </div>
 
-              <div className="p-8 overflow-y-auto flex-1">
+              <div className="max-w-5xl mx-auto w-full px-6 md:px-12 py-12 md:py-16">
+
                 <div className="flex items-center gap-3 mb-2">
                   <span className="font-heading text-xs uppercase tracking-widest text-primary">{selectedProject.category}</span>
                   {selectedProject.status === "current" && (
