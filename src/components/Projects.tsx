@@ -318,17 +318,16 @@ const Projects = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50 bg-secondary/90 backdrop-blur-md flex items-center justify-center p-4"
-            onClick={closeProject}
+            className="fixed inset-0 z-[100] bg-background overflow-y-auto"
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.85, y: 40 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.85, y: 40 }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 40 }}
               transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="bg-background rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col"
-              onClick={(e) => e.stopPropagation()}
+              className="min-h-screen w-full bg-background flex flex-col"
             >
+
               <div
                 className="relative flex-shrink-0"
                 onTouchStart={handleTouchStart}
