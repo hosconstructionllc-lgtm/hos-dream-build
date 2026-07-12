@@ -1,19 +1,36 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Clock, CheckCircle2, ArrowRight } from "lucide-react";
-import { projects } from "@/data/projects";
+import { projects as fallbackProjects } from "@/data/projects";
+import { fetchManagedProjects, type SiteProject } from "@/lib/projectsRepository";
 
 const Projects = () => {
   const [activeTab, setActiveTab] = useState<"current" | "completed">("current");
+  const [projects, setProjects] = useState<SiteProject[]>(fallbackProjects as SiteProject[]);
   const sectionRef = useRef(null);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchManagedProjects()
+      .then((managedProjects) => {
+        if (mounted) setProjects(managedProjects);
+      })
+      .catch(() => {
+        if (mounted) setProjects(fallbackProjects as SiteProject[]);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const counts = useMemo(
     () => ({
       current: projects.filter((p) => p.status === "current" && p.description).length,
       completed: projects.filter((p) => p.status === "completed" && p.description).length,
     }),
-    []
+    [projects]
   );
 
   const visibleProjects = useMemo(
