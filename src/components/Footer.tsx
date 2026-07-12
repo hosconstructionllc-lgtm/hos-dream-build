@@ -65,6 +65,9 @@ const Footer = () => {
           <p className="text-background/40 text-xs">
             © {new Date().getFullYear()} HOS Construction, LLC. All Rights Reserved.
           </p>
+          <a href="/employee-portal" className="inline-block mt-3 text-background/35 hover:text-primary text-xs transition-colors">
+            Employee Portal
+          </a>
         </div>
       </div>
     </motion.footer>
