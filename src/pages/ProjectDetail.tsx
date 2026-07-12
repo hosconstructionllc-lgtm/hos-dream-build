@@ -1,21 +1,58 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, Ruler, CalendarCheck, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, MapPin, Ruler, CalendarCheck, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getProjectBySlug } from "@/data/projects";
+import { fetchManagedProjectBySlug, type SiteProject } from "@/lib/projectsRepository";
 
 const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const project = slug ? getProjectBySlug(slug) : undefined;
+  const [project, setProject] = useState<SiteProject | undefined>();
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    let mounted = true;
+    setLoading(true);
+    if (!slug) {
+      setLoading(false);
+      return;
+    }
+
+    fetchManagedProjectBySlug(slug)
+      .then((projectData) => {
+        if (mounted) {
+          setProject(projectData);
+          setCurrentIndex(0);
+        }
+      })
+      .catch(() => {
+        if (mounted) setProject(undefined);
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
   }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="pt-[170px] pb-24 px-6 text-center">
+          <p className="font-heading uppercase tracking-[0.35em] text-primary text-xs">Loading Project</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!project) {
     return (
@@ -53,73 +90,15 @@ const ProjectDetail = () => {
       <Navbar />
 
       <main className="flex-1 pt-[140px]">
-        {/* Back link */}
-        <div className="max-w-6xl mx-auto w-full px-6 md:px-12 mb-6">
+        <section className="bg-background border-b border-border">
+        <div className="max-w-6xl mx-auto w-full px-6 md:px-12 py-8 md:py-12">
           <Link
             to="/#projects"
             className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
           >
             <ArrowLeft size={16} /> Back to Projects
           </Link>
-        </div>
-
-        {/* Media */}
-        <div
-          className="relative bg-black"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {current?.type === "youtube" ? (
-            <iframe
-              src={current.src}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-[55vh] md:h-[70vh]"
-            />
-          ) : (
-            <img
-              src={current?.src}
-              alt={project.title}
-              className="w-full h-[55vh] md:h-[70vh] object-contain bg-black"
-            />
-          )}
-
-          {project.media.length > 1 && (
-            <>
-              <button
-                onClick={prevMedia}
-                aria-label="Previous"
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg"
-              >
-                <ChevronLeft size={26} />
-              </button>
-              <button
-                onClick={nextMedia}
-                aria-label="Next"
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg"
-              >
-                <ChevronRight size={26} />
-              </button>
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
-                {project.media.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentIndex(idx)}
-                    aria-label={`Go to media ${idx + 1}`}
-                    className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                      idx === currentIndex ? "bg-primary scale-125" : "bg-white/50"
-                    }`}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Info */}
-        <div className="max-w-5xl mx-auto w-full px-6 md:px-12 py-12 md:py-16">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex flex-wrap items-center gap-3 mt-8 mb-3">
             <span className="font-heading text-xs uppercase tracking-widest text-primary">
               {project.category}
             </span>
@@ -173,6 +152,89 @@ const ProjectDetail = () => {
               </div>
             )}
           </div>
+        </div>
+        </section>
+
+        <section className="bg-muted/40">
+          <div className="max-w-6xl mx-auto w-full px-6 md:px-12 py-12 md:py-16">
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <div>
+                <p className="font-heading uppercase tracking-[0.35em] text-primary text-xs mb-2">Project Media</p>
+                <h2 className="font-heading text-2xl md:text-3xl uppercase text-foreground">Gallery</h2>
+              </div>
+              <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
+                <ImageIcon size={16} /> {project.media.length} updates
+              </div>
+            </div>
+
+            <div
+              className="relative bg-hero-navy-deep rounded-md overflow-hidden"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {current?.type === "youtube" ? (
+                <iframe
+                  src={current.src}
+                  title={`${project.title} media`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-[48vh] md:h-[62vh]"
+                />
+              ) : (
+                <img
+                  src={current?.src}
+                  alt={current?.alt || project.title}
+                  className="w-full h-[48vh] md:h-[62vh] object-contain bg-hero-navy-deep"
+                />
+              )}
+
+              {project.media.length > 1 && (
+                <>
+                  <button
+                    onClick={prevMedia}
+                    aria-label="Previous"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg"
+                  >
+                    <ChevronLeft size={26} />
+                  </button>
+                  <button
+                    onClick={nextMedia}
+                    aria-label="Next"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground p-3 rounded-full hover:bg-primary/80 transition-colors shadow-lg"
+                  >
+                    <ChevronRight size={26} />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {project.media.length > 1 && (
+              <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+                {project.media.map((item, idx) => (
+                  <button
+                    key={item.id || idx}
+                    onClick={() => setCurrentIndex(idx)}
+                    aria-label={`Go to media ${idx + 1}`}
+                    className={`h-20 w-28 flex-shrink-0 overflow-hidden rounded-md border-2 transition-all ${
+                      idx === currentIndex ? "border-primary" : "border-transparent opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    {item.type === "youtube" ? (
+                      <span className="flex h-full w-full items-center justify-center bg-secondary text-secondary-foreground text-xs font-bold uppercase">
+                        Video
+                      </span>
+                    ) : (
+                      <img src={item.src} alt={item.alt || project.title} className="h-full w-full object-cover" loading="lazy" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        <div className="max-w-5xl mx-auto w-full px-6 md:px-12 py-12 md:py-16">
 
           {project.timeline && project.timeline.length > 0 && (
             <div className="mt-16">

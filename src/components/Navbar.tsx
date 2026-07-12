@@ -4,11 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 const hosLogo = "https://i.postimg.cc/6QQH4XWt/D7E48163-D792-43E6-94B5-5340190564A5-removebg-preview.png";
 
 const navLinks = [
-  { label: "Home", href: "#home" },
-  { label: "Services", href: "#services" },
-  { label: "Projects", href: "#projects" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "/#home" },
+  { label: "Services", href: "/#services" },
+  { label: "Projects", href: "/#projects" },
+  { label: "About", href: "/#about" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 const Navbar = () => {
@@ -54,7 +54,7 @@ const Navbar = () => {
           height: scrolled ? "72px" : "88px",
         }}
       >
-        <a href="#home" className="flex items-center flex-shrink-0 relative">
+        <a href="/#home" className="flex items-center flex-shrink-0 relative">
           <img
             src={hosLogo}
             alt="HOS Construction Logo"
@@ -83,7 +83,7 @@ const Navbar = () => {
         </ul>
 
         <a
-          href="#contact"
+          href="/#contact"
           className="hidden lg:inline-flex bg-cta-yellow text-cta-yellow-foreground font-bold uppercase tracking-wider text-sm px-6 py-3 hover:brightness-110 transition-all duration-300 rounded-sm"
         >
           Project Inquiry
@@ -120,7 +120,7 @@ const Navbar = () => {
               ))}
               <li>
                 <a
-                  href="#contact"
+                  href="/#contact"
                   onClick={() => setOpen(false)}
                   className="bg-cta-yellow text-cta-yellow-foreground font-semibold uppercase tracking-wider text-sm px-6 py-3 rounded-sm"
                 >
