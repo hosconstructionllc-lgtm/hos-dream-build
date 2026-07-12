@@ -14,16 +14,206 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      project_media: {
+        Row: {
+          alt_text: string
+          caption: string
+          created_at: string
+          display_order: number
+          id: string
+          media_type: string
+          placement: string
+          project_id: string
+          storage_path: string | null
+          timeline_entry_id: string | null
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          alt_text?: string
+          caption?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          media_type?: string
+          placement?: string
+          project_id: string
+          storage_path?: string | null
+          timeline_entry_id?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          alt_text?: string
+          caption?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          media_type?: string
+          placement?: string
+          project_id?: string
+          storage_path?: string | null
+          timeline_entry_id?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_media_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_media_timeline_entry_id_fkey"
+            columns: ["timeline_entry_id"]
+            isOneToOne: false
+            referencedRelation: "project_timeline_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_timeline_entries: {
+        Row: {
+          created_at: string
+          description: string
+          display_order: number
+          entry_date: string
+          id: string
+          project_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          display_order?: number
+          entry_date: string
+          id?: string
+          project_id: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          display_order?: number
+          entry_date?: string
+          id?: string
+          project_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_timeline_entries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          category: string
+          completed_label: string
+          cover_image_url: string | null
+          cover_storage_path: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          display_order: number
+          id: string
+          is_published: boolean
+          location: string
+          project_start: string | null
+          projected_completion: string | null
+          size: string
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          completed_label?: string
+          cover_image_url?: string | null
+          cover_storage_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          location?: string
+          project_start?: string | null
+          projected_completion?: string | null
+          size?: string
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          completed_label?: string
+          cover_image_url?: string | null
+          cover_storage_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          location?: string
+          project_start?: string | null
+          projected_completion?: string | null
+          size?: string
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "employee" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +340,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "employee", "user"],
+    },
   },
 } as const
