@@ -1,48 +1,37 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Clock, CheckCircle2, ArrowRight } from "lucide-react";
-import { projects as fallbackProjects } from "@/data/projects";
-import { fetchManagedProjects, type SiteProject } from "@/lib/projectsRepository";
+import { Clock, CheckCircle2, ArrowRight, MapPin } from "lucide-react";
+import { fetchManagedProjects, STATUS_META, type SiteProject } from "@/lib/projectsRepository";
+
+type TabKey = "current" | "completed";
 
 const Projects = () => {
-  const [activeTab, setActiveTab] = useState<"current" | "completed">("current");
-  const [projects, setProjects] = useState<SiteProject[]>(fallbackProjects as SiteProject[]);
+  const [activeTab, setActiveTab] = useState<TabKey>("current");
+  const [projects, setProjects] = useState<SiteProject[]>([]);
+  const [loading, setLoading] = useState(true);
   const sectionRef = useRef(null);
 
   useEffect(() => {
     let mounted = true;
     fetchManagedProjects()
-      .then((managedProjects) => {
-        if (mounted) setProjects(managedProjects);
-      })
-      .catch(() => {
-        if (mounted) setProjects(fallbackProjects as SiteProject[]);
-      });
-
+      .then((managed) => mounted && setProjects(managed))
+      .catch(() => mounted && setProjects([]))
+      .finally(() => mounted && setLoading(false));
     return () => {
       mounted = false;
     };
   }, []);
 
-  const counts = useMemo(
-    () => ({
-      current: projects.filter((p) => p.status === "current" && p.description).length,
-      completed: projects.filter((p) => p.status === "completed" && p.description).length,
-    }),
-    [projects]
-  );
+  const buckets = useMemo(() => {
+    const current = projects.filter((p) => p.status === "current" || p.status === "planning" || p.status === "on_hold");
+    const completed = projects.filter((p) => p.status === "completed");
+    return { current, completed };
+  }, [projects]);
 
-  const visibleProjects = useMemo(
-    () => projects.filter((p) => p.status === activeTab && p.description),
-    [activeTab]
-  );
+  const visibleProjects = buckets[activeTab];
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
-
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
   const bgY = useTransform(scrollYProgress, [0, 1], ["3%", "-3%"]);
 
   return (
@@ -53,7 +42,7 @@ const Projects = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-center mb-20"
+          className="text-center mb-16 md:mb-20"
         >
           <p className="font-heading uppercase tracking-[0.4em] text-primary text-xs mb-4">Our Portfolio</p>
           <h2 className="font-heading text-5xl md:text-6xl uppercase text-secondary-foreground">Featured Projects</h2>
@@ -61,127 +50,102 @@ const Projects = () => {
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.8, delay: 0.3 }}
             className="w-24 h-1 bg-primary mx-auto mt-6 origin-left"
           />
         </motion.div>
 
-        {/* Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="flex justify-center mb-12"
-        >
+        <div className="flex justify-center mb-12">
           <div className="bg-background rounded-full p-2 inline-flex items-center gap-2 shadow-lg">
             {[
-              { key: "current" as const, label: "Current Projects", count: counts.current, Icon: Clock },
-              { key: "completed" as const, label: "Completed Projects", count: counts.completed, Icon: CheckCircle2 },
+              { key: "current" as const, label: "Current", count: buckets.current.length, Icon: Clock },
+              { key: "completed" as const, label: "Completed", count: buckets.completed.length, Icon: CheckCircle2 },
             ].map(({ key, label, count, Icon }) => {
               const active = activeTab === key;
               return (
                 <button
                   key={key}
                   onClick={() => setActiveTab(key)}
-                  className={`relative flex items-center gap-2 px-5 md:px-7 py-3 rounded-full font-semibold text-sm md:text-base transition-colors duration-300 ${
+                  className={`relative flex items-center gap-2 px-5 md:px-7 py-3 rounded-full font-semibold text-sm md:text-base transition-colors ${
                     active ? "text-primary-foreground" : "text-foreground hover:text-primary"
                   }`}
                 >
                   {active && (
-                    <motion.div
-                      layoutId="tab-pill"
-                      className="absolute inset-0 bg-primary rounded-full shadow-md"
-                      transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
-                    />
+                    <motion.div layoutId="tab-pill" className="absolute inset-0 bg-primary rounded-full shadow-md" transition={{ type: "spring", duration: 0.5, bounce: 0.2 }} />
                   )}
                   <Icon size={18} className="relative z-10" />
                   <span className="relative z-10">{label}</span>
-                  <span
-                    className={`relative z-10 inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-full text-xs font-bold ${
-                      active ? "bg-primary-foreground/25 text-primary-foreground" : "bg-muted text-muted-foreground"
-                    }`}
-                  >
+                  <span className={`relative z-10 inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-full text-xs font-bold ${active ? "bg-primary-foreground/25 text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                     {count}
                   </span>
                 </button>
               );
             })}
           </div>
-        </motion.div>
+        </div>
 
-        {visibleProjects.length === 0 ? (
-          <motion.div
-            key={activeTab + "-empty"}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-20"
-          >
+        {loading ? (
+          <div className="text-center py-20 font-body text-secondary-foreground/60">Loading projects…</div>
+        ) : visibleProjects.length === 0 ? (
+          <div className="text-center py-20">
             <p className="font-body text-secondary-foreground/70 text-lg">
-              {activeTab === "current"
-                ? "Exciting new projects are currently in the works. Check back soon!"
-                : "Completed projects will appear here."}
+              {activeTab === "current" ? "Exciting new projects are on the way. Check back soon!" : "Completed projects will appear here."}
             </p>
-          </motion.div>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {visibleProjects.map((p, i) => (
-              <motion.div
-                key={p.slug}
-                initial={{ opacity: 0, y: 80, scale: 0.95 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{
-                  duration: 0.8,
-                  delay: i * 0.2,
-                  ease: [0.25, 0.46, 0.45, 0.94],
-                }}
-                whileHover={{ y: -10 }}
-                className="relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500 group aspect-[4/5]"
-              >
-                <Link to={`/projects/${p.slug}`} className="absolute inset-0 block">
-                  <motion.img
-                    src={p.image}
-                    alt={p.title}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    whileHover={{ scale: 1.08 }}
-                    transition={{ duration: 0.6 }}
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-hero-navy-deep via-hero-navy-deep/60 to-transparent" />
-
-                  {p.status === "current" && (
-                    <div className="absolute top-4 left-4 bg-cta-yellow text-cta-yellow-foreground text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md">
-                      In Progress
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {visibleProjects.map((p, i) => {
+              const status = STATUS_META[p.status];
+              return (
+                <motion.div
+                  key={p.slug}
+                  initial={{ opacity: 0, y: 60, scale: 0.97 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.7, delay: i * 0.12, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  whileHover={{ y: -8 }}
+                  className="group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow bg-background"
+                >
+                  <Link to={`/projects/${p.slug}`} className="block">
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <motion.img
+                        src={p.image}
+                        alt={p.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        whileHover={{ scale: 1.08 }}
+                        transition={{ duration: 0.7 }}
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <span className={`absolute top-4 left-4 ${status.badgeClass} text-[10px] font-bold uppercase tracking-[0.25em] px-3 py-1.5 rounded-full shadow-md`}>
+                        {status.label}
+                      </span>
                     </div>
-                  )}
-                  {p.status === "completed" && (
-                    <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md">
-                      Completed
+                    <div className="p-6">
+                      {p.projectType && (
+                        <p className="font-heading text-[10px] uppercase tracking-[0.3em] text-primary mb-2">{p.projectType}</p>
+                      )}
+                      <h3 className="font-heading text-xl md:text-2xl uppercase text-foreground leading-tight mb-3">
+                        {p.title}
+                      </h3>
+                      {p.location && (
+                        <p className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
+                          <MapPin size={14} /> {p.location}
+                        </p>
+                      )}
+                      {(p.shortDescription || p.description) && (
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-5">
+                          {p.shortDescription || p.description}
+                        </p>
+                      )}
+                      <span className="inline-flex items-center gap-2 text-primary font-semibold text-xs uppercase tracking-widest group-hover:gap-3 transition-all">
+                        Learn More <ArrowRight size={14} />
+                      </span>
                     </div>
-                  )}
-
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-secondary-foreground">
-                    <h3 className="font-heading text-xl md:text-2xl uppercase tracking-wide mb-4 drop-shadow">
-                      {p.title}
-                    </h3>
-                    {(p.projectStart || p.projectedCompletion) && (
-                      <div className="space-y-1 mb-5 text-sm font-body text-secondary-foreground/90">
-                        {p.projectStart && (
-                          <p><span className="font-semibold">Project Start:</span> {p.projectStart}</p>
-                        )}
-                        {p.projectedCompletion && (
-                          <p><span className="font-semibold">Projected Completion:</span> {p.projectedCompletion}</p>
-                        )}
-                      </div>
-                    )}
-                    <span className="inline-flex items-center gap-2 border border-secondary-foreground/70 text-secondary-foreground px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-widest group-hover:bg-cta-yellow group-hover:text-cta-yellow-foreground group-hover:border-cta-yellow transition-all duration-300">
-                      Learn More <ArrowRight size={14} />
-                    </span>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
+                  </Link>
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </motion.div>
