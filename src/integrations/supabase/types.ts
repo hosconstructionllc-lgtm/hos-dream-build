@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           alt_text: string
           caption: string
+          category: string
           created_at: string
           display_order: number
           id: string
@@ -32,6 +33,7 @@ export type Database = {
         Insert: {
           alt_text?: string
           caption?: string
+          category?: string
           created_at?: string
           display_order?: number
           id?: string
@@ -46,6 +48,7 @@ export type Database = {
         Update: {
           alt_text?: string
           caption?: string
+          category?: string
           created_at?: string
           display_order?: number
           id?: string
@@ -118,6 +121,7 @@ export type Database = {
       projects: {
         Row: {
           category: string
+          client: string
           completed_label: string
           cover_image_url: string | null
           cover_storage_path: string | null
@@ -125,11 +129,17 @@ export type Database = {
           created_by: string | null
           description: string
           display_order: number
+          full_description: string
+          hero_image_url: string | null
+          hero_storage_path: string | null
           id: string
           is_published: boolean
           location: string
           project_start: string | null
+          project_type: string
           projected_completion: string | null
+          services: string[]
+          short_description: string
           size: string
           slug: string
           status: string
@@ -138,6 +148,7 @@ export type Database = {
         }
         Insert: {
           category?: string
+          client?: string
           completed_label?: string
           cover_image_url?: string | null
           cover_storage_path?: string | null
@@ -145,11 +156,17 @@ export type Database = {
           created_by?: string | null
           description?: string
           display_order?: number
+          full_description?: string
+          hero_image_url?: string | null
+          hero_storage_path?: string | null
           id?: string
           is_published?: boolean
           location?: string
           project_start?: string | null
+          project_type?: string
           projected_completion?: string | null
+          services?: string[]
+          short_description?: string
           size?: string
           slug: string
           status?: string
@@ -158,6 +175,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          client?: string
           completed_label?: string
           cover_image_url?: string | null
           cover_storage_path?: string | null
@@ -165,11 +183,17 @@ export type Database = {
           created_by?: string | null
           description?: string
           display_order?: number
+          full_description?: string
+          hero_image_url?: string | null
+          hero_storage_path?: string | null
           id?: string
           is_published?: boolean
           location?: string
           project_start?: string | null
+          project_type?: string
           projected_completion?: string | null
+          services?: string[]
+          short_description?: string
           size?: string
           slug?: string
           status?: string
