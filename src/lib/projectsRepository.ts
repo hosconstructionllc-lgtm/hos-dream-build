@@ -243,9 +243,7 @@ export const fetchManagedProjects = async (includeUnpublished = false): Promise<
   );
 };
 
-export const fetchManagedProjectBySlug = async (slug: string): Promise<SiteProject | undefined> => {
-  const projects = await fetchManagedProjects(true);
-  const found = projects.find((project) => project.slug === slug && (project.isPublished || true));
-  if (found?.isPublished === false) return undefined;
-  return found;
+export const fetchManagedProjectBySlug = async (slug: string, includeUnpublished = false): Promise<SiteProject | undefined> => {
+  const projects = await fetchManagedProjects(includeUnpublished);
+  return projects.find((project) => project.slug === slug);
 };
