@@ -181,7 +181,7 @@ const EmployeePortal = () => {
         return;
       }
 
-      const updates: Record<string, string> = {};
+      const updates: { hero_storage_path?: string; cover_storage_path?: string } = {};
       if (heroFile) updates.hero_storage_path = await uploadFile(heroFile, created.id);
       if (coverFile) updates.cover_storage_path = await uploadFile(coverFile, created.id);
       if (Object.keys(updates).length) {
