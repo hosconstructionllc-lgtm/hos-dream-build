@@ -267,7 +267,9 @@ const EmployeePortal = () => {
     setBusy(true);
     try {
       const services = editForm.services.split(",").map((s) => s.trim()).filter(Boolean);
-      const updates: Record<string, unknown> = {
+      const heroPath = editHeroFile ? await uploadFile(editHeroFile, selectedProject.id) : undefined;
+      const coverPath = editCoverFile ? await uploadFile(editCoverFile, selectedProject.id) : undefined;
+      const { error } = await supabase.from("projects").update({
         title: editForm.title,
         category: editForm.category || editForm.project_type,
         project_type: editForm.project_type,
@@ -283,10 +285,9 @@ const EmployeePortal = () => {
         status: editForm.status,
         completed_label: STATUS_OPTIONS.find((o) => o.value === editForm.status)?.label || "",
         is_published: editForm.is_published,
-      };
-      if (editHeroFile) updates.hero_storage_path = await uploadFile(editHeroFile, selectedProject.id);
-      if (editCoverFile) updates.cover_storage_path = await uploadFile(editCoverFile, selectedProject.id);
-      const { error } = await supabase.from("projects").update(updates).eq("id", selectedProject.id);
+        ...(heroPath ? { hero_storage_path: heroPath } : {}),
+        ...(coverPath ? { cover_storage_path: coverPath } : {}),
+      }).eq("id", selectedProject.id);
       if (error) { setMessage(error.message); return; }
       setMessage("Project updated.");
       setEditHeroFile(null);
