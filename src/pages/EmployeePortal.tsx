@@ -353,22 +353,52 @@ const EmployeePortal = () => {
   const addMedia = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (busy || !selectedProject?.id) return;
+    if (mediaPlacement === "timeline" && !mediaTimelineId) {
+      setMessage("Choose which timeline update these photos belong to.");
+      return;
+    }
     setBusy(true);
     const form = new FormData(event.currentTarget);
     const files = form.getAll("files") as File[];
+    const linkedTimelineId = mediaPlacement === "timeline" ? mediaTimelineId : null;
     try {
+      let added = 0;
+
+      // Duplicate selected existing gallery items into this timeline update
+      if (linkedTimelineId && reuseIds.length) {
+        const sources = mediaRows.filter((m) => reuseIds.includes(m.id));
+        const rowsToInsert = sources.map((src, i) => ({
+          project_id: selectedProject.id!,
+          timeline_entry_id: linkedTimelineId,
+          media_type: src.media_type,
+          url: src.url,
+          storage_path: src.storage_path,
+          placement: "timeline",
+          category: mediaCategory,
+          alt_text: src.alt_text || selectedProject.title,
+          caption: src.caption || "",
+          display_order: Date.now() + i,
+        }));
+        if (rowsToInsert.length) {
+          const { error } = await supabase.from("project_media").insert(rowsToInsert);
+          if (error) throw error;
+          added += rowsToInsert.length;
+        }
+      }
+
       if (youtubeUrl) {
         const { error } = await supabase.from("project_media").insert({
           project_id: selectedProject.id,
-          timeline_entry_id: mediaPlacement === "timeline" ? mediaTimelineId || null : null,
+          timeline_entry_id: linkedTimelineId,
           media_type: "youtube",
           url: youtubeUrl,
           placement: mediaPlacement,
           category: mediaCategory,
           alt_text: selectedProject.title,
-          display_order: Date.now(),
+          display_order: Date.now() + 1000,
         });
         if (error) throw error;
+        added += 1;
       }
       const validFiles = files.filter((f) => f && f.size > 0);
       for (let i = 0; i < validFiles.length; i++) {
@@ -377,18 +407,24 @@ const EmployeePortal = () => {
         const kind = file.type.startsWith("video/") ? "video" : "image";
         const { error } = await supabase.from("project_media").insert({
           project_id: selectedProject.id,
-          timeline_entry_id: mediaPlacement === "timeline" ? mediaTimelineId || null : null,
+          timeline_entry_id: linkedTimelineId,
           media_type: kind,
           storage_path: path,
           placement: mediaPlacement,
           category: mediaCategory,
           alt_text: selectedProject.title,
-          display_order: Date.now() + i,
+          display_order: Date.now() + 2000 + i,
         });
         if (error) throw error;
+        added += 1;
       }
-      setMessage(`Uploaded ${validFiles.length + (youtubeUrl ? 1 : 0)} item(s).`);
+      if (added === 0) {
+        setMessage("Add a file, YouTube link, or pick existing photos to attach.");
+      } else {
+        setMessage(`Added ${added} item(s).`);
+      }
       setYoutubeUrl("");
+      setReuseIds([]);
       event.currentTarget.reset();
       await loadDetail(selectedProject.id);
     } catch (error) {
