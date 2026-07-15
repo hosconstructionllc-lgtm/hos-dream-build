@@ -674,13 +674,36 @@ const EmployeePortal = () => {
                     </div>
                   </div>
                   {mediaPlacement === "timeline" && (
-                    <div>
-                      <Label>Timeline Update</Label>
-                      <Select value={mediaTimelineId} onValueChange={setMediaTimelineId}>
-                        <SelectTrigger><SelectValue placeholder="Choose update" /></SelectTrigger>
-                        <SelectContent>{timelineRows.map((entry) => <SelectItem key={entry.id} value={entry.id}>{entry.entry_date} — {entry.title || "Update"}</SelectItem>)}</SelectContent>
-                      </Select>
-                    </div>
+                    <>
+                      <div>
+                        <Label>Timeline Update</Label>
+                        <Select value={mediaTimelineId} onValueChange={setMediaTimelineId}>
+                          <SelectTrigger><SelectValue placeholder="Choose update" /></SelectTrigger>
+                          <SelectContent>{timelineRows.map((entry) => <SelectItem key={entry.id} value={entry.id}>{entry.entry_date} — {entry.title || "Update"}</SelectItem>)}</SelectContent>
+                        </Select>
+                      </div>
+                      {galleryMedia.length > 0 && (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <Label className="mb-0">Or pick from existing gallery photos</Label>
+                            {reuseIds.length > 0 && (
+                              <button type="button" className="text-xs text-muted-foreground hover:text-primary" onClick={() => setReuseIds([])}>Clear ({reuseIds.length})</button>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground mb-2">Selected photos will be added to this timeline update while staying in the main gallery.</p>
+                          <div className="grid grid-cols-4 md:grid-cols-6 gap-2 max-h-64 overflow-y-auto p-1 border border-border rounded-md bg-muted/30">
+                            {galleryMedia.map((row) => (
+                              <PickerThumb
+                                key={row.id}
+                                row={row}
+                                selected={reuseIds.includes(row.id)}
+                                onToggle={() => setReuseIds((prev) => prev.includes(row.id) ? prev.filter((i) => i !== row.id) : [...prev, row.id])}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                   <div><Label>Photos / Videos (multiple)</Label><Input name="files" type="file" accept="image/*,video/*" multiple /></div>
                   <div><Label>YouTube URL</Label><Input value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="Optional YouTube link" /></div>
