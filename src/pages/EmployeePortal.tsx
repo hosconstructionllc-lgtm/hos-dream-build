@@ -108,6 +108,7 @@ const EmployeePortal = () => {
   const [mediaCategory, setMediaCategory] = useState<string>("general");
   const [mediaTimelineId, setMediaTimelineId] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [reuseIds, setReuseIds] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
 
   const selectedProject = useMemo(() => projects.find((p) => p.id === selectedId) || null, [projects, selectedId]);
