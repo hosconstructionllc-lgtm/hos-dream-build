@@ -680,7 +680,7 @@ const EmployeePortal = () => {
                   <div className="mb-6">
                     <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Gallery</p>
                     <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-                      {galleryMedia.map((row) => <MediaThumb key={row.id} row={row} onDelete={() => deleteMedia(row)} />)}
+                      {galleryMedia.map((row) => <MediaThumb key={row.id} row={row} onDelete={() => deleteMedia(row)} timelineOptions={timelineRows} onAttach={(tid) => attachToTimeline(row, tid)} />)}
                     </div>
                   </div>
                 )}
