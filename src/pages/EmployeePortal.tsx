@@ -56,7 +56,17 @@ const emptyProject = {
 
 type EditableProject = typeof emptyProject;
 
-const MediaThumb = ({ row, onDelete }: { row: MediaRow; onDelete: () => void }) => {
+const MediaThumb = ({
+  row,
+  onDelete,
+  timelineOptions,
+  onAttach,
+}: {
+  row: MediaRow;
+  onDelete: () => void;
+  timelineOptions?: TimelineRow[];
+  onAttach?: (timelineId: string) => void;
+}) => {
   const [url, setUrl] = useState<string | undefined>(row.url || undefined);
   useEffect(() => {
     if (!row.url && row.storage_path) getStorageUrl(row.storage_path).then(setUrl);
@@ -73,8 +83,25 @@ const MediaThumb = ({ row, onDelete }: { row: MediaRow; onDelete: () => void }) 
       ) : (
         url ? <img src={url} alt={row.alt_text} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-muted" />
       )}
-      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1 p-2 text-white text-[10px] text-center">
+      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1.5 p-2 text-white text-[10px] text-center">
         <span className="uppercase tracking-wide">{row.placement} · {row.category}</span>
+        {timelineOptions && onAttach && timelineOptions.length > 0 && (
+          <select
+            className="w-full text-[10px] bg-white text-foreground rounded px-1 py-0.5"
+            defaultValue=""
+            onChange={(e) => {
+              if (e.target.value) {
+                onAttach(e.target.value);
+                e.target.value = "";
+              }
+            }}
+          >
+            <option value="">+ Attach to timeline…</option>
+            {timelineOptions.map((t) => (
+              <option key={t.id} value={t.id}>{t.entry_date} — {t.title || "Update"}</option>
+            ))}
+          </select>
+        )}
         <Button size="sm" variant="destructive" className="h-7 px-2" onClick={onDelete}><Trash2 size={12} /></Button>
       </div>
     </div>
