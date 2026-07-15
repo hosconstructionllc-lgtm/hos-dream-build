@@ -81,6 +81,31 @@ const MediaThumb = ({ row, onDelete }: { row: MediaRow; onDelete: () => void }) 
   );
 };
 
+const PickerThumb = ({ row, selected, onToggle }: { row: MediaRow; selected: boolean; onToggle: () => void }) => {
+  const [url, setUrl] = useState<string | undefined>(row.url || undefined);
+  useEffect(() => {
+    if (!row.url && row.storage_path) getStorageUrl(row.storage_path).then(setUrl);
+  }, [row.url, row.storage_path]);
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={`relative aspect-square rounded-md overflow-hidden border-2 transition ${selected ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-primary/50"}`}
+    >
+      {row.media_type === "youtube" ? (
+        <div className="w-full h-full flex items-center justify-center bg-black text-white"><Play size={20} /></div>
+      ) : row.media_type === "video" ? (
+        url ? <video src={url} className="w-full h-full object-cover" muted /> : <div className="w-full h-full bg-muted" />
+      ) : (
+        url ? <img src={url} alt={row.alt_text} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-muted" />
+      )}
+      {selected && (
+        <div className="absolute top-1 right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">✓</div>
+      )}
+    </button>
+  );
+};
+
 const EmployeePortal = () => {
   const [user, setUser] = useState<SessionUser>(null);
   const [email, setEmail] = useState("");
@@ -108,6 +133,7 @@ const EmployeePortal = () => {
   const [mediaCategory, setMediaCategory] = useState<string>("general");
   const [mediaTimelineId, setMediaTimelineId] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [reuseIds, setReuseIds] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
 
   const selectedProject = useMemo(() => projects.find((p) => p.id === selectedId) || null, [projects, selectedId]);
@@ -352,22 +378,52 @@ const EmployeePortal = () => {
   const addMedia = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (busy || !selectedProject?.id) return;
+    if (mediaPlacement === "timeline" && !mediaTimelineId) {
+      setMessage("Choose which timeline update these photos belong to.");
+      return;
+    }
     setBusy(true);
     const form = new FormData(event.currentTarget);
     const files = form.getAll("files") as File[];
+    const linkedTimelineId = mediaPlacement === "timeline" ? mediaTimelineId : null;
     try {
+      let added = 0;
+
+      // Duplicate selected existing gallery items into this timeline update
+      if (linkedTimelineId && reuseIds.length) {
+        const sources = mediaRows.filter((m) => reuseIds.includes(m.id));
+        const rowsToInsert = sources.map((src, i) => ({
+          project_id: selectedProject.id!,
+          timeline_entry_id: linkedTimelineId,
+          media_type: src.media_type,
+          url: src.url,
+          storage_path: src.storage_path,
+          placement: "timeline",
+          category: mediaCategory,
+          alt_text: src.alt_text || selectedProject.title,
+          caption: src.caption || "",
+          display_order: Date.now() + i,
+        }));
+        if (rowsToInsert.length) {
+          const { error } = await supabase.from("project_media").insert(rowsToInsert);
+          if (error) throw error;
+          added += rowsToInsert.length;
+        }
+      }
+
       if (youtubeUrl) {
         const { error } = await supabase.from("project_media").insert({
           project_id: selectedProject.id,
-          timeline_entry_id: mediaPlacement === "timeline" ? mediaTimelineId || null : null,
+          timeline_entry_id: linkedTimelineId,
           media_type: "youtube",
           url: youtubeUrl,
           placement: mediaPlacement,
           category: mediaCategory,
           alt_text: selectedProject.title,
-          display_order: Date.now(),
+          display_order: Date.now() + 1000,
         });
         if (error) throw error;
+        added += 1;
       }
       const validFiles = files.filter((f) => f && f.size > 0);
       for (let i = 0; i < validFiles.length; i++) {
@@ -376,18 +432,24 @@ const EmployeePortal = () => {
         const kind = file.type.startsWith("video/") ? "video" : "image";
         const { error } = await supabase.from("project_media").insert({
           project_id: selectedProject.id,
-          timeline_entry_id: mediaPlacement === "timeline" ? mediaTimelineId || null : null,
+          timeline_entry_id: linkedTimelineId,
           media_type: kind,
           storage_path: path,
           placement: mediaPlacement,
           category: mediaCategory,
           alt_text: selectedProject.title,
-          display_order: Date.now() + i,
+          display_order: Date.now() + 2000 + i,
         });
         if (error) throw error;
+        added += 1;
       }
-      setMessage(`Uploaded ${validFiles.length + (youtubeUrl ? 1 : 0)} item(s).`);
+      if (added === 0) {
+        setMessage("Add a file, YouTube link, or pick existing photos to attach.");
+      } else {
+        setMessage(`Added ${added} item(s).`);
+      }
       setYoutubeUrl("");
+      setReuseIds([]);
       event.currentTarget.reset();
       await loadDetail(selectedProject.id);
     } catch (error) {
@@ -612,13 +674,36 @@ const EmployeePortal = () => {
                     </div>
                   </div>
                   {mediaPlacement === "timeline" && (
-                    <div>
-                      <Label>Timeline Update</Label>
-                      <Select value={mediaTimelineId} onValueChange={setMediaTimelineId}>
-                        <SelectTrigger><SelectValue placeholder="Choose update" /></SelectTrigger>
-                        <SelectContent>{timelineRows.map((entry) => <SelectItem key={entry.id} value={entry.id}>{entry.entry_date} — {entry.title || "Update"}</SelectItem>)}</SelectContent>
-                      </Select>
-                    </div>
+                    <>
+                      <div>
+                        <Label>Timeline Update</Label>
+                        <Select value={mediaTimelineId} onValueChange={setMediaTimelineId}>
+                          <SelectTrigger><SelectValue placeholder="Choose update" /></SelectTrigger>
+                          <SelectContent>{timelineRows.map((entry) => <SelectItem key={entry.id} value={entry.id}>{entry.entry_date} — {entry.title || "Update"}</SelectItem>)}</SelectContent>
+                        </Select>
+                      </div>
+                      {galleryMedia.length > 0 && (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <Label className="mb-0">Or pick from existing gallery photos</Label>
+                            {reuseIds.length > 0 && (
+                              <button type="button" className="text-xs text-muted-foreground hover:text-primary" onClick={() => setReuseIds([])}>Clear ({reuseIds.length})</button>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground mb-2">Selected photos will be added to this timeline update while staying in the main gallery.</p>
+                          <div className="grid grid-cols-4 md:grid-cols-6 gap-2 max-h-64 overflow-y-auto p-1 border border-border rounded-md bg-muted/30">
+                            {galleryMedia.map((row) => (
+                              <PickerThumb
+                                key={row.id}
+                                row={row}
+                                selected={reuseIds.includes(row.id)}
+                                onToggle={() => setReuseIds((prev) => prev.includes(row.id) ? prev.filter((i) => i !== row.id) : [...prev, row.id])}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                   <div><Label>Photos / Videos (multiple)</Label><Input name="files" type="file" accept="image/*,video/*" multiple /></div>
                   <div><Label>YouTube URL</Label><Input value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="Optional YouTube link" /></div>
