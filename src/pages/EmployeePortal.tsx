@@ -56,7 +56,17 @@ const emptyProject = {
 
 type EditableProject = typeof emptyProject;
 
-const MediaThumb = ({ row, onDelete }: { row: MediaRow; onDelete: () => void }) => {
+const MediaThumb = ({
+  row,
+  onDelete,
+  timelineOptions,
+  onAttach,
+}: {
+  row: MediaRow;
+  onDelete: () => void;
+  timelineOptions?: TimelineRow[];
+  onAttach?: (timelineId: string) => void;
+}) => {
   const [url, setUrl] = useState<string | undefined>(row.url || undefined);
   useEffect(() => {
     if (!row.url && row.storage_path) getStorageUrl(row.storage_path).then(setUrl);
@@ -73,8 +83,25 @@ const MediaThumb = ({ row, onDelete }: { row: MediaRow; onDelete: () => void }) 
       ) : (
         url ? <img src={url} alt={row.alt_text} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-muted" />
       )}
-      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1 p-2 text-white text-[10px] text-center">
+      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1.5 p-2 text-white text-[10px] text-center">
         <span className="uppercase tracking-wide">{row.placement} · {row.category}</span>
+        {timelineOptions && onAttach && timelineOptions.length > 0 && (
+          <select
+            className="w-full text-[10px] bg-white text-foreground rounded px-1 py-0.5"
+            defaultValue=""
+            onChange={(e) => {
+              if (e.target.value) {
+                onAttach(e.target.value);
+                e.target.value = "";
+              }
+            }}
+          >
+            <option value="">+ Attach to timeline…</option>
+            {timelineOptions.map((t) => (
+              <option key={t.id} value={t.id}>{t.entry_date} — {t.title || "Update"}</option>
+            ))}
+          </select>
+        )}
         <Button size="sm" variant="destructive" className="h-7 px-2" onClick={onDelete}><Trash2 size={12} /></Button>
       </div>
     </div>
@@ -483,6 +510,25 @@ const EmployeePortal = () => {
     await loadProjects();
   };
 
+  const attachToTimeline = async (row: MediaRow, timelineId: string) => {
+    if (!selectedProject?.id || !timelineId) return;
+    const { error } = await supabase.from("project_media").insert({
+      project_id: selectedProject.id,
+      timeline_entry_id: timelineId,
+      media_type: row.media_type,
+      url: row.url,
+      storage_path: row.storage_path,
+      placement: "timeline",
+      category: row.category || "progress",
+      alt_text: row.alt_text || selectedProject.title,
+      caption: row.caption || "",
+      display_order: Date.now(),
+    });
+    if (error) { setMessage(error.message); return; }
+    setMessage("Photo attached to timeline update.");
+    await loadDetail(selectedProject.id);
+  };
+
   const galleryMedia = mediaRows.filter((m) => m.placement === "gallery");
   const timelineMediaFor = (tid: string) => mediaRows.filter((m) => m.placement === "timeline" && m.timeline_entry_id === tid);
 
@@ -634,7 +680,7 @@ const EmployeePortal = () => {
                   <div className="mb-6">
                     <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Gallery</p>
                     <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-                      {galleryMedia.map((row) => <MediaThumb key={row.id} row={row} onDelete={() => deleteMedia(row)} />)}
+                      {galleryMedia.map((row) => <MediaThumb key={row.id} row={row} onDelete={() => deleteMedia(row)} timelineOptions={timelineRows} onAttach={(tid) => attachToTimeline(row, tid)} />)}
                     </div>
                   </div>
                 )}
