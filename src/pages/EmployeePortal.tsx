@@ -510,6 +510,25 @@ const EmployeePortal = () => {
     await loadProjects();
   };
 
+  const attachToTimeline = async (row: MediaRow, timelineId: string) => {
+    if (!selectedProject?.id || !timelineId) return;
+    const { error } = await supabase.from("project_media").insert({
+      project_id: selectedProject.id,
+      timeline_entry_id: timelineId,
+      media_type: row.media_type,
+      url: row.url,
+      storage_path: row.storage_path,
+      placement: "timeline",
+      category: row.category || "progress",
+      alt_text: row.alt_text || selectedProject.title,
+      caption: row.caption || "",
+      display_order: Date.now(),
+    });
+    if (error) { setMessage(error.message); return; }
+    setMessage("Photo attached to timeline update.");
+    await loadDetail(selectedProject.id);
+  };
+
   const galleryMedia = mediaRows.filter((m) => m.placement === "gallery");
   const timelineMediaFor = (tid: string) => mediaRows.filter((m) => m.placement === "timeline" && m.timeline_entry_id === tid);
 
