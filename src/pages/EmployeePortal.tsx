@@ -81,6 +81,31 @@ const MediaThumb = ({ row, onDelete }: { row: MediaRow; onDelete: () => void }) 
   );
 };
 
+const PickerThumb = ({ row, selected, onToggle }: { row: MediaRow; selected: boolean; onToggle: () => void }) => {
+  const [url, setUrl] = useState<string | undefined>(row.url || undefined);
+  useEffect(() => {
+    if (!row.url && row.storage_path) getStorageUrl(row.storage_path).then(setUrl);
+  }, [row.url, row.storage_path]);
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={`relative aspect-square rounded-md overflow-hidden border-2 transition ${selected ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-primary/50"}`}
+    >
+      {row.media_type === "youtube" ? (
+        <div className="w-full h-full flex items-center justify-center bg-black text-white"><Play size={20} /></div>
+      ) : row.media_type === "video" ? (
+        url ? <video src={url} className="w-full h-full object-cover" muted /> : <div className="w-full h-full bg-muted" />
+      ) : (
+        url ? <img src={url} alt={row.alt_text} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-muted" />
+      )}
+      {selected && (
+        <div className="absolute top-1 right-1 bg-primary text-primary-foreground text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">✓</div>
+      )}
+    </button>
+  );
+};
+
 const EmployeePortal = () => {
   const [user, setUser] = useState<SessionUser>(null);
   const [email, setEmail] = useState("");
