@@ -186,6 +186,7 @@ const EmployeePortal = () => {
   const [mediaTimelineId, setMediaTimelineId] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [reuseIds, setReuseIds] = useState<string[]>([]);
+  const [timelineUploadState, setTimelineUploadState] = useState<Record<string, { status: "uploading" | "success" | "error"; message: string }>>({});
   const [busy, setBusy] = useState(false);
 
   const selectedProject = useMemo(() => projects.find((p) => p.id === selectedId) || null, [projects, selectedId]);
@@ -303,6 +304,13 @@ const EmployeePortal = () => {
       timelineTitle: timeline?.title || "Update",
       mediaCount,
     });
+  };
+
+  const nextMediaDisplayOrder = (placement: "gallery" | "timeline", timelineId?: string | null) => {
+    const maxOrder = mediaRows
+      .filter((media) => media.placement === placement && (placement !== "timeline" || media.timeline_entry_id === timelineId))
+      .reduce((max, media) => Math.max(max, media.display_order || 0), 0);
+    return maxOrder + 1;
   };
 
   const saveNewProject = async (event: FormEvent) => {
@@ -461,6 +469,7 @@ const EmployeePortal = () => {
     try {
       let added = 0;
       const insertedRows: MediaRow[] = [];
+      let displayOrder = nextMediaDisplayOrder(mediaPlacement, linkedTimelineId);
       const existingTimelineKeys = linkedTimelineId
         ? new Set(
             mediaRows
@@ -486,13 +495,14 @@ const EmployeePortal = () => {
           category: mediaCategory,
           alt_text: src.alt_text || selectedProject.title,
           caption: src.caption || "",
-          display_order: Date.now() + i,
+          display_order: displayOrder + i,
         }));
         if (rowsToInsert.length) {
           const { data, error } = await supabase.from("project_media").insert(rowsToInsert).select("*");
           if (error) throw error;
           insertedRows.push(...((data || []) as MediaRow[]));
           added += rowsToInsert.length;
+          displayOrder += rowsToInsert.length;
         }
       }
 
@@ -505,11 +515,12 @@ const EmployeePortal = () => {
           placement: mediaPlacement,
           category: mediaCategory,
           alt_text: selectedProject.title,
-          display_order: Date.now() + 1000,
+          display_order: displayOrder,
         }).select("*").single();
         if (error) throw error;
         if (data) insertedRows.push(data as MediaRow);
         added += 1;
+        displayOrder += 1;
       }
       const validFiles = files.filter((f) => f && f.size > 0);
       for (let i = 0; i < validFiles.length; i++) {
@@ -524,7 +535,7 @@ const EmployeePortal = () => {
           placement: mediaPlacement,
           category: mediaCategory,
           alt_text: selectedProject.title,
-          display_order: Date.now() + 2000 + i,
+          display_order: displayOrder + i,
         }).select("*").single();
         if (error) throw error;
         if (data) insertedRows.push(data as MediaRow);
@@ -598,7 +609,7 @@ const EmployeePortal = () => {
       category: row.category || "progress",
       alt_text: row.alt_text || selectedProject.title,
       caption: row.caption || "",
-      display_order: Date.now(),
+      display_order: nextMediaDisplayOrder("timeline", timelineId),
     }).select("*").single();
     if (error) { setMessage(error.message); return; }
     if (data) setMediaRows((prev) => [...prev, data as MediaRow]);
@@ -610,11 +621,22 @@ const EmployeePortal = () => {
   const uploadTimelineFiles = async (timelineId: string, files: File[]) => {
     if (!selectedProject?.id || !timelineId || busy) return;
     const validFiles = files.filter((file) => file && file.size > 0);
-    if (!validFiles.length) return;
+    if (!validFiles.length) {
+      setTimelineUploadState((prev) => ({
+        ...prev,
+        [timelineId]: { status: "error", message: "No file was selected." },
+      }));
+      return;
+    }
 
     setBusy(true);
+    setTimelineUploadState((prev) => ({
+      ...prev,
+      [timelineId]: { status: "uploading", message: `Uploading ${validFiles.length} file${validFiles.length === 1 ? "" : "s"}…` },
+    }));
     try {
       const rowsToInsert = [];
+      const displayOrder = nextMediaDisplayOrder("timeline", timelineId);
       for (let i = 0; i < validFiles.length; i++) {
         const file = validFiles[i];
         const path = await uploadFile(file, selectedProject.id);
@@ -626,7 +648,7 @@ const EmployeePortal = () => {
           placement: "timeline",
           category: "progress",
           alt_text: selectedProject.title,
-          display_order: Date.now() + i,
+          display_order: displayOrder + i,
         });
       }
 
@@ -636,10 +658,19 @@ const EmployeePortal = () => {
 
       const timelineLabel = timelineLabelById.get(timelineId) || "selected update";
       logTimelineAttachment("timeline-quick-upload", timelineId, rowsToInsert.length);
+      setTimelineUploadState((prev) => ({
+        ...prev,
+        [timelineId]: { status: "success", message: `Uploaded ${rowsToInsert.length} item${rowsToInsert.length === 1 ? "" : "s"}.` },
+      }));
       setMessage(`Uploaded ${rowsToInsert.length} photo/video item(s) to timeline: ${timelineLabel}.`);
       await loadDetail(selectedProject.id);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Timeline upload failed.");
+      const errorMessage = error instanceof Error ? error.message : "Timeline upload failed.";
+      setTimelineUploadState((prev) => ({
+        ...prev,
+        [timelineId]: { status: "error", message: errorMessage },
+      }));
+      setMessage(errorMessage);
     } finally {
       setBusy(false);
     }
@@ -797,6 +828,11 @@ const EmployeePortal = () => {
                                   }}
                                 />
                               </label>
+                              {timelineUploadState[row.id] && (
+                                <span className={`text-xs font-semibold ${timelineUploadState[row.id].status === "error" ? "text-destructive" : timelineUploadState[row.id].status === "success" ? "text-emerald-600" : "text-primary"}`}>
+                                  {timelineUploadState[row.id].message}
+                                </span>
+                              )}
                             </div>
                             {timelineMediaFor(row.id).length > 0 && (
                               <div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
