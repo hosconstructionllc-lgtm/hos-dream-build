@@ -460,12 +460,24 @@ const EmployeePortal = () => {
     const linkedTimelineId = mediaPlacement === "timeline" ? mediaTimelineId : null;
     try {
       let added = 0;
+      const insertedRows: MediaRow[] = [];
+      const existingTimelineKeys = linkedTimelineId
+        ? new Set(
+            mediaRows
+              .filter((m) => m.placement === "timeline" && m.timeline_entry_id === linkedTimelineId)
+              .map((m) => m.storage_path || m.url)
+              .filter(Boolean),
+          )
+        : new Set<string>();
 
       // Duplicate selected existing gallery items into this timeline update
       if (linkedTimelineId && reuseIds.length) {
-        const sources = mediaRows.filter((m) => reuseIds.includes(m.id));
+        const sources = mediaRows.filter((m) => {
+          const mediaKey = m.storage_path || m.url;
+          return reuseIds.includes(m.id) && (!mediaKey || !existingTimelineKeys.has(mediaKey));
+        });
         const rowsToInsert = sources.map((src, i) => ({
-          project_id: selectedProject.id!,
+          project_id: selectedProject.id,
           timeline_entry_id: linkedTimelineId,
           media_type: src.media_type,
           url: src.url,
@@ -477,14 +489,15 @@ const EmployeePortal = () => {
           display_order: Date.now() + i,
         }));
         if (rowsToInsert.length) {
-          const { error } = await supabase.from("project_media").insert(rowsToInsert);
+          const { data, error } = await supabase.from("project_media").insert(rowsToInsert).select("*");
           if (error) throw error;
+          insertedRows.push(...((data || []) as MediaRow[]));
           added += rowsToInsert.length;
         }
       }
 
       if (youtubeUrl) {
-        const { error } = await supabase.from("project_media").insert({
+        const { data, error } = await supabase.from("project_media").insert({
           project_id: selectedProject.id,
           timeline_entry_id: linkedTimelineId,
           media_type: "youtube",
@@ -493,8 +506,9 @@ const EmployeePortal = () => {
           category: mediaCategory,
           alt_text: selectedProject.title,
           display_order: Date.now() + 1000,
-        });
+        }).select("*").single();
         if (error) throw error;
+        if (data) insertedRows.push(data as MediaRow);
         added += 1;
       }
       const validFiles = files.filter((f) => f && f.size > 0);
@@ -502,7 +516,7 @@ const EmployeePortal = () => {
         const file = validFiles[i];
         const path = await uploadFile(file, selectedProject.id);
         const kind = file.type.startsWith("video/") ? "video" : "image";
-        const { error } = await supabase.from("project_media").insert({
+        const { data, error } = await supabase.from("project_media").insert({
           project_id: selectedProject.id,
           timeline_entry_id: linkedTimelineId,
           media_type: kind,
@@ -511,13 +525,15 @@ const EmployeePortal = () => {
           category: mediaCategory,
           alt_text: selectedProject.title,
           display_order: Date.now() + 2000 + i,
-        });
+        }).select("*").single();
         if (error) throw error;
+        if (data) insertedRows.push(data as MediaRow);
         added += 1;
       }
       if (added === 0) {
-        setMessage("Add a file, YouTube link, or pick existing photos to attach.");
+        setMessage(reuseIds.length ? "Those photo(s) are already attached to that timeline update." : "Add a file, YouTube link, or pick existing photos to attach.");
       } else {
+        if (insertedRows.length) setMediaRows((prev) => [...prev, ...insertedRows]);
         logTimelineAttachment("upload-form", linkedTimelineId, added);
         const timelineLabel = linkedTimelineId ? timelineLabelById.get(linkedTimelineId) : null;
         setMessage(timelineLabel ? `Added ${added} item(s) to timeline: ${timelineLabel}.` : `Added ${added} item(s).`);
@@ -559,7 +575,20 @@ const EmployeePortal = () => {
 
   const attachToTimeline = async (row: MediaRow, timelineId: string) => {
     if (!selectedProject?.id || !timelineId) return;
-    const { error } = await supabase.from("project_media").insert({
+    const mediaKey = row.storage_path || row.url;
+    const alreadyAttached = mediaKey && mediaRows.some((media) => (
+      media.timeline_entry_id === timelineId &&
+      media.placement === "timeline" &&
+      (media.storage_path || media.url) === mediaKey
+    ));
+    const timelineLabel = timelineLabelById.get(timelineId) || "selected update";
+
+    if (alreadyAttached) {
+      setMessage(`That photo is already on timeline: ${timelineLabel}.`);
+      return;
+    }
+
+    const { data, error } = await supabase.from("project_media").insert({
       project_id: selectedProject.id,
       timeline_entry_id: timelineId,
       media_type: row.media_type,
@@ -570,12 +599,50 @@ const EmployeePortal = () => {
       alt_text: row.alt_text || selectedProject.title,
       caption: row.caption || "",
       display_order: Date.now(),
-    });
+    }).select("*").single();
     if (error) { setMessage(error.message); return; }
-    const timelineLabel = timelineLabelById.get(timelineId) || "selected update";
+    if (data) setMediaRows((prev) => [...prev, data as MediaRow]);
     logTimelineAttachment("gallery-thumbnail", timelineId, 1);
     setMessage(`Photo attached to timeline: ${timelineLabel}.`);
     await loadDetail(selectedProject.id);
+  };
+
+  const uploadTimelineFiles = async (timelineId: string, files: File[]) => {
+    if (!selectedProject?.id || !timelineId || busy) return;
+    const validFiles = files.filter((file) => file && file.size > 0);
+    if (!validFiles.length) return;
+
+    setBusy(true);
+    try {
+      const rowsToInsert = [];
+      for (let i = 0; i < validFiles.length; i++) {
+        const file = validFiles[i];
+        const path = await uploadFile(file, selectedProject.id);
+        rowsToInsert.push({
+          project_id: selectedProject.id,
+          timeline_entry_id: timelineId,
+          media_type: file.type.startsWith("video/") ? "video" : "image",
+          storage_path: path,
+          placement: "timeline",
+          category: "progress",
+          alt_text: selectedProject.title,
+          display_order: Date.now() + i,
+        });
+      }
+
+      const { data, error } = await supabase.from("project_media").insert(rowsToInsert).select("*");
+      if (error) throw error;
+      if (data?.length) setMediaRows((prev) => [...prev, ...(data as MediaRow[])]);
+
+      const timelineLabel = timelineLabelById.get(timelineId) || "selected update";
+      logTimelineAttachment("timeline-quick-upload", timelineId, rowsToInsert.length);
+      setMessage(`Uploaded ${rowsToInsert.length} photo/video item(s) to timeline: ${timelineLabel}.`);
+      await loadDetail(selectedProject.id);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Timeline upload failed.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const galleryMedia = mediaRows.filter((m) => m.placement === "gallery");
@@ -707,8 +774,41 @@ const EmployeePortal = () => {
                             <p className="text-xs uppercase tracking-widest text-primary">{row.entry_date}</p>
                             <p className="font-heading uppercase text-sm">{row.title || "Update"}</p>
                             <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{row.description}</p>
+                            <div className="mt-3 flex flex-wrap items-center gap-3">
+                              {timelineMediaFor(row.id).length > 0 ? (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+                                  <CheckCircle2 size={12} /> On timeline · {timelineMediaFor(row.id).length} media
+                                </span>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">No timeline media yet</span>
+                              )}
+                              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground hover:border-primary hover:text-primary transition">
+                                <Upload size={12} /> Add photo here
+                                <input
+                                  type="file"
+                                  accept="image/*,video/*"
+                                  multiple
+                                  className="sr-only"
+                                  disabled={busy}
+                                  onChange={(event) => {
+                                    const files = Array.from(event.target.files || []);
+                                    uploadTimelineFiles(row.id, files);
+                                    event.target.value = "";
+                                  }}
+                                />
+                              </label>
+                            </div>
                             {timelineMediaFor(row.id).length > 0 && (
-                              <p className="mt-2 text-xs text-muted-foreground">{timelineMediaFor(row.id).length} media item(s) attached</p>
+                              <div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
+                                {timelineMediaFor(row.id).slice(0, 6).map((media) => (
+                                  <MediaThumb
+                                    key={media.id}
+                                    row={media}
+                                    onDelete={() => deleteMedia(media)}
+                                    attachedTimelineLabels={media.timeline_entry_id ? [timelineLabelById.get(media.timeline_entry_id) || "Timeline update"] : []}
+                                  />
+                                ))}
+                              </div>
                             )}
                           </div>
                           <div className="flex flex-col sm:flex-row gap-2">
