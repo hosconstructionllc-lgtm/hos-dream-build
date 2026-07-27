@@ -528,7 +528,25 @@ const ProjectDetail = () => {
           </section>
         )}
 
+        {/* SHOWCASE — final project media */}
+        {project.media && project.media.length > 0 && (
+          <section className="bg-background">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24">
+              <div className="text-center mb-12">
+                <p className="font-heading uppercase tracking-[0.4em] text-primary text-xs mb-3">
+                  {isCompleted ? "Final Result" : "Project Showcase"}
+                </p>
+                <h2 className="font-heading text-3xl md:text-5xl uppercase text-foreground">
+                  {isCompleted ? "The Finished Build" : "Progress & Media"}
+                </h2>
+              </div>
+              <ShowcaseCarousel items={project.media} onOpen={(idx) => openLightbox(project.media, idx)} />
+            </div>
+          </section>
+        )}
+
       </main>
+
 
       {lightboxItems && (
         <Lightbox
