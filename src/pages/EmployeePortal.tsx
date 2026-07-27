@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ImagePlus, LogOut, Pencil, Plus, ShieldCheck, Trash2, Upload, X, ChevronRight, Save, Eye, EyeOff, Play } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ImagePlus, LogOut, Pencil, Plus, ShieldCheck, Trash2, Upload, X, ChevronRight, Save, Eye, EyeOff, Play } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -61,13 +61,16 @@ const MediaThumb = ({
   onDelete,
   timelineOptions,
   onAttach,
+  attachedTimelineLabels = [],
 }: {
   row: MediaRow;
   onDelete: () => void;
   timelineOptions?: TimelineRow[];
   onAttach?: (timelineId: string) => void;
+  attachedTimelineLabels?: string[];
 }) => {
   const [url, setUrl] = useState<string | undefined>(row.url || undefined);
+  const isAttachedToTimeline = row.placement === "timeline" || attachedTimelineLabels.length > 0;
   useEffect(() => {
     if (!row.url && row.storage_path) getStorageUrl(row.storage_path).then(setUrl);
   }, [row.url, row.storage_path]);
@@ -83,8 +86,29 @@ const MediaThumb = ({
       ) : (
         url ? <img src={url} alt={row.alt_text} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-muted" />
       )}
+      {isAttachedToTimeline && (
+        <div className="absolute left-1.5 top-1.5 max-w-[calc(100%-12px)] rounded-full bg-emerald-600 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white shadow-md flex items-center gap-1">
+          <CheckCircle2 size={11} />
+          <span className="truncate">Attached to timeline</span>
+        </div>
+      )}
+      {attachedTimelineLabels.length > 0 && (
+        <div className="absolute inset-x-1.5 bottom-1.5 rounded bg-black/75 px-2 py-1 text-[9px] font-semibold text-white shadow-md">
+          {attachedTimelineLabels.slice(0, 2).join(", ")}{attachedTimelineLabels.length > 2 ? ` +${attachedTimelineLabels.length - 2}` : ""}
+        </div>
+      )}
       <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1.5 p-2 text-white text-[10px] text-center">
         <span className="uppercase tracking-wide">{row.placement} · {row.category}</span>
+        {isAttachedToTimeline && (
+          <span className="rounded-full bg-emerald-600 px-2 py-1 font-bold uppercase tracking-wide">
+            Attached to timeline
+          </span>
+        )}
+        {attachedTimelineLabels.length > 0 && (
+          <span className="text-[9px] leading-tight text-white/85">
+            {attachedTimelineLabels.join(", ")}
+          </span>
+        )}
         {timelineOptions && onAttach && timelineOptions.length > 0 && (
           <select
             className="w-full text-[10px] bg-white text-foreground rounded px-1 py-0.5"
@@ -164,6 +188,12 @@ const EmployeePortal = () => {
   const [busy, setBusy] = useState(false);
 
   const selectedProject = useMemo(() => projects.find((p) => p.id === selectedId) || null, [projects, selectedId]);
+
+  const timelineLabelById = useMemo(() => {
+    return new Map(
+      timelineRows.map((row) => [row.id, `${row.entry_date} — ${row.title || "Update"}`]),
+    );
+  }, [timelineRows]);
 
   const loadProjects = async () => {
     const managed = await fetchManagedProjects(true);
@@ -258,6 +288,20 @@ const EmployeePortal = () => {
     const { error } = await supabase.storage.from("project-media").upload(path, file);
     if (error) throw error;
     return path;
+  };
+
+  const logTimelineAttachment = (source: string, timelineId: string | null, mediaCount: number) => {
+    if (!timelineId) return;
+    const timeline = timelineRows.find((row) => row.id === timelineId);
+    console.info("Attached media to timeline update", {
+      source,
+      project: selectedProject?.title,
+      projectId: selectedProject?.id,
+      timelineId,
+      timelineDate: timeline?.entry_date,
+      timelineTitle: timeline?.title || "Update",
+      mediaCount,
+    });
   };
 
   const saveNewProject = async (event: FormEvent) => {
@@ -473,7 +517,9 @@ const EmployeePortal = () => {
       if (added === 0) {
         setMessage("Add a file, YouTube link, or pick existing photos to attach.");
       } else {
-        setMessage(`Added ${added} item(s).`);
+        logTimelineAttachment("upload-form", linkedTimelineId, added);
+        const timelineLabel = linkedTimelineId ? timelineLabelById.get(linkedTimelineId) : null;
+        setMessage(timelineLabel ? `Added ${added} item(s) to timeline: ${timelineLabel}.` : `Added ${added} item(s).`);
       }
       setYoutubeUrl("");
       setReuseIds([]);
@@ -525,12 +571,26 @@ const EmployeePortal = () => {
       display_order: Date.now(),
     });
     if (error) { setMessage(error.message); return; }
-    setMessage("Photo attached to timeline update.");
+    const timelineLabel = timelineLabelById.get(timelineId) || "selected update";
+    logTimelineAttachment("gallery-thumbnail", timelineId, 1);
+    setMessage(`Photo attached to timeline: ${timelineLabel}.`);
     await loadDetail(selectedProject.id);
   };
 
   const galleryMedia = mediaRows.filter((m) => m.placement === "gallery");
   const timelineMediaFor = (tid: string) => mediaRows.filter((m) => m.placement === "timeline" && m.timeline_entry_id === tid);
+  const attachedTimelineLabelsFor = (row: MediaRow) => {
+    const sourceKey = row.storage_path || row.url;
+    if (!sourceKey) return [];
+
+    return mediaRows
+      .filter((media) => {
+        if (media.placement !== "timeline" || !media.timeline_entry_id) return false;
+        const mediaKey = media.storage_path || media.url;
+        return mediaKey === sourceKey;
+      })
+      .map((media) => timelineLabelById.get(media.timeline_entry_id || "") || "Timeline update");
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -680,7 +740,16 @@ const EmployeePortal = () => {
                   <div className="mb-6">
                     <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Gallery</p>
                     <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-                      {galleryMedia.map((row) => <MediaThumb key={row.id} row={row} onDelete={() => deleteMedia(row)} timelineOptions={timelineRows} onAttach={(tid) => attachToTimeline(row, tid)} />)}
+                      {galleryMedia.map((row) => (
+                        <MediaThumb
+                          key={row.id}
+                          row={row}
+                          onDelete={() => deleteMedia(row)}
+                          timelineOptions={timelineRows}
+                          onAttach={(tid) => attachToTimeline(row, tid)}
+                          attachedTimelineLabels={attachedTimelineLabelsFor(row)}
+                        />
+                      ))}
                     </div>
                   </div>
                 )}
@@ -691,7 +760,14 @@ const EmployeePortal = () => {
                     <div key={t.id} className="mb-6">
                       <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Timeline — {t.entry_date} · {t.title}</p>
                       <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-                        {items.map((row) => <MediaThumb key={row.id} row={row} onDelete={() => deleteMedia(row)} />)}
+                        {items.map((row) => (
+                          <MediaThumb
+                            key={row.id}
+                            row={row}
+                            onDelete={() => deleteMedia(row)}
+                            attachedTimelineLabels={row.timeline_entry_id ? [timelineLabelById.get(row.timeline_entry_id) || "Timeline update"] : []}
+                          />
+                        ))}
                       </div>
                     </div>
                   );

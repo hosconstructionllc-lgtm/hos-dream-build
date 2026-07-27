@@ -318,6 +318,8 @@ const ProjectDetail = () => {
                 <div className="space-y-12 md:space-y-16">
                   {project.timeline.map((entry, idx) => {
                     const left = idx % 2 === 0;
+                    const mediaItems = entry.media?.filter((item) => item.src) || [];
+                    const leadMedia = mediaItems[0];
                     return (
                       <motion.div
                         key={entry.id || idx}
@@ -330,13 +332,72 @@ const ProjectDetail = () => {
                         <div className="absolute left-4 md:left-1/2 top-6 w-4 h-4 rounded-full bg-primary md:-translate-x-1/2 ring-4 ring-background z-10" />
 
                         <div className={`${left ? "md:pr-8 md:text-right" : "md:col-start-2 md:pl-8"}`}>
-                          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
-                            {entry.media && entry.media.length > 0 && (
+                          <div className="bg-card border border-border rounded-md overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                            {leadMedia && (
+                              <div className="bg-muted">
+                                <button
+                                  onClick={() => openLightbox(mediaItems, 0)}
+                                  className="relative block w-full aspect-[16/10] overflow-hidden group text-left"
+                                >
+                                  {leadMedia.type === "image" ? (
+                                    <img src={leadMedia.src} alt={leadMedia.alt || ""} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                                  ) : leadMedia.type === "video" ? (
+                                    <>
+                                      <video src={leadMedia.src} className="w-full h-full object-cover" muted />
+                                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                        <PlayCircle className="text-white" size={44} />
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <div className="w-full h-full bg-hero-navy-deep flex items-center justify-center">
+                                      <PlayCircle className="text-white" size={44} />
+                                    </div>
+                                  )}
+                                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span className="text-xs font-bold uppercase tracking-widest text-white">
+                                      View timeline photo{mediaItems.length > 1 ? "s" : ""}
+                                    </span>
+                                  </div>
+                                </button>
+                                {mediaItems.length > 1 && (
+                                  <div className="grid grid-cols-3 gap-1 p-1">
+                                    {mediaItems.slice(1, 4).map((m, mIdx) => (
+                                      <button
+                                        key={m.id || mIdx}
+                                        onClick={() => openLightbox(mediaItems, mIdx + 1)}
+                                        className="relative aspect-video overflow-hidden bg-muted group"
+                                      >
+                                        {m.type === "image" ? (
+                                          <img src={m.src} alt={m.alt || ""} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                                        ) : m.type === "video" ? (
+                                          <>
+                                            <video src={m.src} className="w-full h-full object-cover" muted />
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                              <PlayCircle className="text-white" size={28} />
+                                            </div>
+                                          </>
+                                        ) : (
+                                          <div className="w-full h-full bg-hero-navy-deep flex items-center justify-center">
+                                            <PlayCircle className="text-white" size={28} />
+                                          </div>
+                                        )}
+                                        {mIdx === 2 && mediaItems.length > 4 && (
+                                          <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-xs font-bold uppercase tracking-widest text-white">
+                                            +{mediaItems.length - 4} more
+                                          </div>
+                                        )}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            {!leadMedia && entry.media && entry.media.length > 0 && (
                               <div className={`grid ${entry.media.length > 1 ? "grid-cols-2" : "grid-cols-1"} gap-1`}>
                                 {entry.media.slice(0, 4).map((m, mIdx) => (
                                   <button
                                     key={m.id || mIdx}
-                                    onClick={() => openLightbox(entry.media!, mIdx)}
+                                    onClick={() => openLightbox(entry.media || [], mIdx)}
                                     className="relative aspect-video overflow-hidden group"
                                   >
                                     {m.type === "image" ? (
