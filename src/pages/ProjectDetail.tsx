@@ -117,7 +117,6 @@ const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [project, setProject] = useState<SiteProject | undefined>();
   const [loading, setLoading] = useState(true);
-  const [galleryFilter, setGalleryFilter] = useState<GalleryCategory | "all">("all");
   const [lightboxItems, setLightboxItems] = useState<SiteMediaItem[] | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -137,24 +136,6 @@ const ProjectDetail = () => {
       mounted = false;
     };
   }, [slug]);
-
-  const filteredGallery = useMemo(() => {
-    if (!project) return [];
-    if (galleryFilter === "all") return project.media;
-    if (galleryFilter === "video")
-      return project.media.filter((m) => m.type === "youtube" || m.type === "video");
-    return project.media.filter((m) => m.category === galleryFilter);
-  }, [project, galleryFilter]);
-
-  const availableCategories = useMemo(() => {
-    if (!project) return [];
-    const present = new Set<string>();
-    project.media.forEach((m) => {
-      if (m.type === "youtube" || m.type === "video") present.add("video");
-      present.add(m.category || "general");
-    });
-    return GALLERY_CATEGORIES.filter((c) => present.has(c.value) && c.value !== "general");
-  }, [project]);
 
   const openLightbox = (items: SiteMediaItem[], idx: number) => {
     setLightboxItems(items);
