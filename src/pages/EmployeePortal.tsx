@@ -919,7 +919,7 @@ const EmployeePortal = () => {
                       <Select value={mediaPlacement} onValueChange={(v: "gallery" | "timeline") => setMediaPlacement(v)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="gallery">Main Gallery</SelectItem>
+                          <SelectItem value="gallery">Project Showcase Carousel</SelectItem>
                           <SelectItem value="timeline">Specific Timeline Update</SelectItem>
                         </SelectContent>
                       </Select>
