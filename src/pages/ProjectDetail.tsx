@@ -18,9 +18,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
   fetchManagedProjectBySlug,
-  GALLERY_CATEGORIES,
   STATUS_META,
-  type GalleryCategory,
   type SiteMediaItem,
   type SiteProject,
 } from "@/lib/projectsRepository";
