@@ -186,34 +186,32 @@ const ProjectDetail = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="relative w-full h-[80vh] min-h-[560px] flex items-center justify-center overflow-hidden"
+          className="relative w-full h-[58vh] min-h-[440px] max-h-[640px] flex items-center justify-center overflow-hidden"
         >
           <motion.img
             src={project.heroImage || project.image}
             alt={project.title}
-            initial={{ scale: 1.15 }}
+            initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 1.4, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
 
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.3 }}
-            className="relative z-10 text-center px-6 max-w-5xl mx-auto pt-[140px]"
+            className="relative z-10 text-center px-6 max-w-5xl mx-auto pt-[120px]"
           >
-            <span
-              className={`inline-block ${statusMeta.badgeClass} text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] px-4 py-2 rounded-full shadow-lg mb-6`}
-            >
+            <span className="inline-block bg-white/10 backdrop-blur-sm border border-white/20 text-white text-[11px] font-bold uppercase tracking-[0.35em] px-5 py-2 rounded-full mb-8">
               {statusMeta.label}
             </span>
-            <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl uppercase text-white leading-[1.05] tracking-tight mb-6 drop-shadow-lg">
+            <h1 className="font-heading font-extrabold text-5xl md:text-6xl lg:text-7xl uppercase text-white leading-[1.02] tracking-tight mb-8 drop-shadow-lg">
               {project.title}
             </h1>
             {(project.shortDescription || project.description) && (
-              <p className="font-body text-white/85 text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
+              <p className="font-body text-white/85 text-base md:text-lg leading-relaxed max-w-3xl mx-auto">
                 {project.shortDescription || project.description}
               </p>
             )}
