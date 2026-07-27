@@ -875,7 +875,7 @@ const EmployeePortal = () => {
                 <h2 className="font-heading text-2xl uppercase mb-5 flex items-center gap-2"><ImagePlus size={18} /> Media ({mediaRows.length})</h2>
                 {galleryMedia.length > 0 && (
                   <div className="mb-6">
-                    <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Gallery</p>
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Project Showcase (carousel on project page)</p>
                     <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
                       {galleryMedia.map((row) => (
                         <MediaThumb
@@ -919,7 +919,7 @@ const EmployeePortal = () => {
                       <Select value={mediaPlacement} onValueChange={(v: "gallery" | "timeline") => setMediaPlacement(v)}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="gallery">Main Gallery</SelectItem>
+                          <SelectItem value="gallery">Project Showcase Carousel</SelectItem>
                           <SelectItem value="timeline">Specific Timeline Update</SelectItem>
                         </SelectContent>
                       </Select>
