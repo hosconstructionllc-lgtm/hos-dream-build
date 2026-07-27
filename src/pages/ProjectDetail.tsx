@@ -207,11 +207,11 @@ const ProjectDetail = () => {
             <span className="inline-block bg-white/10 backdrop-blur-sm border border-white/20 text-white text-[11px] font-bold uppercase tracking-[0.35em] px-5 py-2 rounded-full mb-8">
               {statusMeta.label}
             </span>
-            <h1 className="font-heading font-extrabold text-5xl md:text-6xl lg:text-7xl uppercase text-white leading-[1.02] tracking-tight mb-8 drop-shadow-lg">
+            <h1 className="font-heading font-extrabold text-3xl md:text-5xl lg:text-6xl uppercase text-white leading-[1.05] tracking-tight mb-6 drop-shadow-lg">
               {project.title}
             </h1>
             {(project.shortDescription || project.description) && (
-              <p className="font-body text-white/85 text-base md:text-lg leading-relaxed max-w-3xl mx-auto">
+              <p className="font-body text-white/85 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
                 {project.shortDescription || project.description}
               </p>
             )}
