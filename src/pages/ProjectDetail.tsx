@@ -318,7 +318,7 @@ const ProjectDetail = () => {
             <span className="inline-block bg-white/10 backdrop-blur-sm border border-white/20 text-white text-[11px] font-bold uppercase tracking-[0.35em] px-5 py-2 rounded-full mb-8">
               {statusMeta.label}
             </span>
-            <h1 className="font-heading font-extrabold text-3xl md:text-5xl lg:text-6xl uppercase text-white leading-[1.05] tracking-tight mb-6 drop-shadow-lg">
+            <h1 className="font-heading font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-5xl uppercase text-white leading-[1.1] tracking-tight mb-6 drop-shadow-lg">
               {project.title}
             </h1>
             {(project.shortDescription || project.description) && (
