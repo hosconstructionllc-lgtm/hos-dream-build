@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -18,9 +18,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
   fetchManagedProjectBySlug,
-  GALLERY_CATEGORIES,
   STATUS_META,
-  type GalleryCategory,
   type SiteMediaItem,
   type SiteProject,
 } from "@/lib/projectsRepository";
@@ -119,7 +117,6 @@ const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [project, setProject] = useState<SiteProject | undefined>();
   const [loading, setLoading] = useState(true);
-  const [galleryFilter, setGalleryFilter] = useState<GalleryCategory | "all">("all");
   const [lightboxItems, setLightboxItems] = useState<SiteMediaItem[] | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -139,24 +136,6 @@ const ProjectDetail = () => {
       mounted = false;
     };
   }, [slug]);
-
-  const filteredGallery = useMemo(() => {
-    if (!project) return [];
-    if (galleryFilter === "all") return project.media;
-    if (galleryFilter === "video")
-      return project.media.filter((m) => m.type === "youtube" || m.type === "video");
-    return project.media.filter((m) => m.category === galleryFilter);
-  }, [project, galleryFilter]);
-
-  const availableCategories = useMemo(() => {
-    if (!project) return [];
-    const present = new Set<string>();
-    project.media.forEach((m) => {
-      if (m.type === "youtube" || m.type === "video") present.add("video");
-      present.add(m.category || "general");
-    });
-    return GALLERY_CATEGORIES.filter((c) => present.has(c.value) && c.value !== "general");
-  }, [project]);
 
   const openLightbox = (items: SiteMediaItem[], idx: number) => {
     setLightboxItems(items);
@@ -440,81 +419,6 @@ const ProjectDetail = () => {
           </section>
         )}
 
-        {/* GALLERY */}
-        {project.media.length > 0 && (
-          <section className="bg-background">
-            <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24">
-              <div className="text-center mb-10">
-                <p className="font-heading uppercase tracking-[0.4em] text-primary text-xs mb-3">Media Library</p>
-                <h2 className="font-heading text-3xl md:text-5xl uppercase text-foreground">Project Gallery</h2>
-              </div>
-
-              {availableCategories.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-2 mb-10">
-                  <button
-                    onClick={() => setGalleryFilter("all")}
-                    className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
-                      galleryFilter === "all"
-                        ? "bg-primary text-primary-foreground shadow-md"
-                        : "bg-muted text-muted-foreground hover:bg-muted/70"
-                    }`}
-                  >
-                    All ({project.media.length})
-                  </button>
-                  {availableCategories.map((cat) => (
-                    <button
-                      key={cat.value}
-                      onClick={() => setGalleryFilter(cat.value)}
-                      className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
-                        galleryFilter === cat.value
-                          ? "bg-primary text-primary-foreground shadow-md"
-                          : "bg-muted text-muted-foreground hover:bg-muted/70"
-                      }`}
-                    >
-                      {cat.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-                {filteredGallery.map((item, idx) => (
-                  <motion.button
-                    key={item.id || idx}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: (idx % 8) * 0.05 }}
-                    whileHover={{ y: -4 }}
-                    onClick={() => openLightbox(filteredGallery, idx)}
-                    className="relative aspect-square overflow-hidden rounded-xl bg-muted group"
-                  >
-                    {item.type === "image" ? (
-                      <img
-                        src={item.src}
-                        alt={item.alt || ""}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        loading="lazy"
-                      />
-                    ) : item.type === "video" ? (
-                      <>
-                        <video src={item.src} className="w-full h-full object-cover" muted />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/20 transition-colors">
-                          <PlayCircle className="text-white" size={48} />
-                        </div>
-                      </>
-                    ) : (
-                      <div className="w-full h-full bg-hero-navy-deep flex items-center justify-center">
-                        <PlayCircle className="text-white" size={48} />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </motion.button>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
       </main>
 
       {lightboxItems && (

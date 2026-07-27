@@ -76,42 +76,44 @@ const MediaThumb = ({
   }, [row.url, row.storage_path]);
 
   return (
-    <div className="relative group aspect-square rounded-md overflow-hidden border border-border bg-muted">
-      {row.media_type === "youtube" ? (
-        <div className="w-full h-full flex items-center justify-center bg-black text-white">
-          <Play size={28} />
-        </div>
-      ) : row.media_type === "video" ? (
-        url ? <video src={url} className="w-full h-full object-cover" muted /> : <div className="w-full h-full bg-muted" />
-      ) : (
-        url ? <img src={url} alt={row.alt_text} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-muted" />
-      )}
-      {isAttachedToTimeline && (
-        <div className="absolute left-1.5 top-1.5 max-w-[calc(100%-12px)] rounded-full bg-emerald-600 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white shadow-md flex items-center gap-1">
-          <CheckCircle2 size={11} />
-          <span className="truncate">Attached to timeline</span>
-        </div>
-      )}
-      {attachedTimelineLabels.length > 0 && (
-        <div className="absolute inset-x-1.5 bottom-1.5 rounded bg-black/75 px-2 py-1 text-[9px] font-semibold text-white shadow-md">
-          {attachedTimelineLabels.slice(0, 2).join(", ")}{attachedTimelineLabels.length > 2 ? ` +${attachedTimelineLabels.length - 2}` : ""}
-        </div>
-      )}
-      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-1.5 p-2 text-white text-[10px] text-center">
-        <span className="uppercase tracking-wide">{row.placement} · {row.category}</span>
+    <div className="relative rounded-md overflow-hidden border border-border bg-muted">
+      <div className="relative aspect-square group">
+        {row.media_type === "youtube" ? (
+          <div className="w-full h-full flex items-center justify-center bg-black text-white">
+            <Play size={28} />
+          </div>
+        ) : row.media_type === "video" ? (
+          url ? <video src={url} className="w-full h-full object-cover" muted /> : <div className="w-full h-full bg-muted" />
+        ) : (
+          url ? <img src={url} alt={row.alt_text} className="w-full h-full object-cover" /> : <div className="w-full h-full bg-muted" />
+        )}
         {isAttachedToTimeline && (
-          <span className="rounded-full bg-emerald-600 px-2 py-1 font-bold uppercase tracking-wide">
-            Attached to timeline
-          </span>
+          <div className="absolute left-1.5 top-1.5 max-w-[calc(100%-12px)] rounded-full bg-emerald-600 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-white shadow-md flex items-center gap-1">
+            <CheckCircle2 size={11} />
+            <span className="truncate">On timeline</span>
+          </div>
         )}
         {attachedTimelineLabels.length > 0 && (
-          <span className="text-[9px] leading-tight text-white/85">
-            {attachedTimelineLabels.join(", ")}
-          </span>
+          <div className="absolute inset-x-1.5 bottom-1.5 rounded bg-black/75 px-2 py-1 text-[9px] font-semibold text-white shadow-md">
+            {attachedTimelineLabels.slice(0, 2).join(", ")}{attachedTimelineLabels.length > 2 ? ` +${attachedTimelineLabels.length - 2}` : ""}
+          </div>
         )}
+        <button
+          type="button"
+          onClick={onDelete}
+          className="absolute right-1.5 top-1.5 rounded-full bg-black/70 hover:bg-red-600 p-1.5 text-white opacity-0 group-hover:opacity-100 transition"
+          aria-label="Delete media"
+        >
+          <Trash2 size={12} />
+        </button>
+      </div>
+      <div className="p-1.5 space-y-1 bg-card">
+        <div className="text-[9px] uppercase tracking-wide text-muted-foreground truncate">
+          {row.placement} · {row.category}
+        </div>
         {timelineOptions && onAttach && timelineOptions.length > 0 && (
           <select
-            className="w-full text-[10px] bg-white text-foreground rounded px-1 py-0.5"
+            className="w-full text-[10px] bg-background border border-border rounded px-1 py-1"
             defaultValue=""
             onChange={(e) => {
               if (e.target.value) {
@@ -126,7 +128,6 @@ const MediaThumb = ({
             ))}
           </select>
         )}
-        <Button size="sm" variant="destructive" className="h-7 px-2" onClick={onDelete}><Trash2 size={12} /></Button>
       </div>
     </div>
   );
