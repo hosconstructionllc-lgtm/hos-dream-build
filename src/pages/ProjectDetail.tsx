@@ -113,12 +113,123 @@ const Lightbox = ({
   );
 };
 
+const ShowcaseCarousel = ({
+  items,
+  onOpen,
+}: {
+  items: SiteMediaItem[];
+  onOpen: (idx: number) => void;
+}) => {
+  const [active, setActive] = useState(0);
+  if (items.length === 0) return null;
+  const prev = () => setActive((i) => (i - 1 + items.length) % items.length);
+  const next = () => setActive((i) => (i + 1) % items.length);
+  const getItem = (offset: number) => items[(active + offset + items.length) % items.length];
+
+  const renderMedia = (item: SiteMediaItem, isCenter: boolean) => {
+    if (item.type === "youtube") {
+      return isCenter ? (
+        <iframe src={item.src} className="w-full h-full" allowFullScreen allow="autoplay; encrypted-media" />
+      ) : (
+        <div className="w-full h-full bg-hero-navy-deep flex items-center justify-center">
+          <PlayCircle className="text-white/80" size={44} />
+        </div>
+      );
+    }
+    if (item.type === "video") {
+      return (
+        <>
+          <video src={item.src} className="w-full h-full object-cover" muted autoPlay={isCenter} loop playsInline controls={isCenter} />
+          {!isCenter && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+              <PlayCircle className="text-white" size={44} />
+            </div>
+          )}
+        </>
+      );
+    }
+    return <img src={item.src} alt={item.alt || ""} className="w-full h-full object-cover" loading="lazy" />;
+  };
+
+  return (
+    <div className="relative">
+      <div className="flex items-center justify-center gap-3 md:gap-5">
+        {items.length > 1 && (
+          <button
+            onClick={prev}
+            aria-label="Previous"
+            className="hidden md:block absolute left-2 z-20 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 text-foreground"
+          >
+            <ChevronLeft size={22} />
+          </button>
+        )}
+
+        {items.length > 2 && (
+          <button
+            onClick={prev}
+            className="hidden md:block relative w-[18%] aspect-[4/3] rounded-2xl overflow-hidden opacity-60 hover:opacity-90 transition-opacity"
+          >
+            {renderMedia(getItem(-1), false)}
+          </button>
+        )}
+
+        <button
+          onClick={() => onOpen(active)}
+          className="relative w-full md:w-[58%] aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl bg-muted"
+        >
+          {renderMedia(getItem(0), true)}
+        </button>
+
+        {items.length > 2 && (
+          <button
+            onClick={next}
+            className="hidden md:block relative w-[18%] aspect-[4/3] rounded-2xl overflow-hidden opacity-60 hover:opacity-90 transition-opacity"
+          >
+            {renderMedia(getItem(1), false)}
+          </button>
+        )}
+
+        {items.length > 1 && (
+          <button
+            onClick={next}
+            aria-label="Next"
+            className="hidden md:block absolute right-2 z-20 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 text-foreground"
+          >
+            <ChevronRight size={22} />
+          </button>
+        )}
+      </div>
+
+      {items.length > 1 && (
+        <div className="flex md:hidden justify-center gap-2 mt-6">
+          <button onClick={prev} className="bg-card border border-border rounded-full p-2 shadow"><ChevronLeft size={20} /></button>
+          <button onClick={next} className="bg-card border border-border rounded-full p-2 shadow"><ChevronRight size={20} /></button>
+        </div>
+      )}
+
+      {items.length > 1 && (
+        <div className="flex justify-center gap-1.5 mt-6">
+          {items.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              className={`h-1.5 rounded-full transition-all ${i === active ? "w-8 bg-primary" : "w-1.5 bg-border"}`}
+              aria-label={`Show item ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [project, setProject] = useState<SiteProject | undefined>();
   const [loading, setLoading] = useState(true);
   const [lightboxItems, setLightboxItems] = useState<SiteMediaItem[] | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -417,7 +528,25 @@ const ProjectDetail = () => {
           </section>
         )}
 
+        {/* SHOWCASE — final project media */}
+        {project.media && project.media.length > 0 && (
+          <section className="bg-background">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24">
+              <div className="text-center mb-12">
+                <p className="font-heading uppercase tracking-[0.4em] text-primary text-xs mb-3">
+                  {isCompleted ? "Final Result" : "Project Showcase"}
+                </p>
+                <h2 className="font-heading text-3xl md:text-5xl uppercase text-foreground">
+                  {isCompleted ? "The Finished Build" : "Progress & Media"}
+                </h2>
+              </div>
+              <ShowcaseCarousel items={project.media} onOpen={(idx) => openLightbox(project.media, idx)} />
+            </div>
+          </section>
+        )}
+
       </main>
+
 
       {lightboxItems && (
         <Lightbox
