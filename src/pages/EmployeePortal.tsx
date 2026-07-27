@@ -477,7 +477,7 @@ const EmployeePortal = () => {
           return reuseIds.includes(m.id) && (!mediaKey || !existingTimelineKeys.has(mediaKey));
         });
         const rowsToInsert = sources.map((src, i) => ({
-          project_id: selectedProject.id!,
+          project_id: selectedProject.id,
           timeline_entry_id: linkedTimelineId,
           media_type: src.media_type,
           url: src.url,
