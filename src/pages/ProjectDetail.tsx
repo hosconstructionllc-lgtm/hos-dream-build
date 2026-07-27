@@ -297,7 +297,7 @@ const ProjectDetail = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
-          className="relative w-full h-[58vh] min-h-[440px] max-h-[640px] flex items-center justify-center overflow-hidden"
+          className="relative w-full min-h-[560px] md:min-h-[620px] flex items-center justify-center overflow-hidden pt-[180px] pb-16"
         >
           <motion.img
             src={project.heroImage || project.image}
@@ -313,7 +313,7 @@ const ProjectDetail = () => {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.3 }}
-            className="relative z-10 text-center px-6 max-w-5xl mx-auto pt-[120px]"
+            className="relative z-10 text-center px-6 max-w-5xl mx-auto"
           >
             <span className="inline-block bg-white/10 backdrop-blur-sm border border-white/20 text-white text-[11px] font-bold uppercase tracking-[0.35em] px-5 py-2 rounded-full mb-8">
               {statusMeta.label}
@@ -330,10 +330,11 @@ const ProjectDetail = () => {
 
           <Link
             to="/#projects"
-            className="absolute top-[130px] left-6 md:left-12 z-10 inline-flex items-center gap-2 text-white/80 hover:text-white font-semibold text-sm bg-black/30 backdrop-blur px-4 py-2 rounded-full"
+            className="absolute top-[150px] left-6 md:left-12 z-10 inline-flex items-center gap-2 text-white/80 hover:text-white font-semibold text-sm bg-black/30 backdrop-blur px-4 py-2 rounded-full"
           >
             <ArrowLeft size={16} /> All Projects
           </Link>
+
         </motion.section>
 
         {/* INFO CARDS */}
