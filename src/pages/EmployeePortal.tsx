@@ -774,8 +774,41 @@ const EmployeePortal = () => {
                             <p className="text-xs uppercase tracking-widest text-primary">{row.entry_date}</p>
                             <p className="font-heading uppercase text-sm">{row.title || "Update"}</p>
                             <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{row.description}</p>
+                            <div className="mt-3 flex flex-wrap items-center gap-3">
+                              {timelineMediaFor(row.id).length > 0 ? (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+                                  <CheckCircle2 size={12} /> On timeline · {timelineMediaFor(row.id).length} media
+                                </span>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">No timeline media yet</span>
+                              )}
+                              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-semibold text-foreground hover:border-primary hover:text-primary transition">
+                                <Upload size={12} /> Add photo here
+                                <input
+                                  type="file"
+                                  accept="image/*,video/*"
+                                  multiple
+                                  className="sr-only"
+                                  disabled={busy}
+                                  onChange={(event) => {
+                                    const files = Array.from(event.target.files || []);
+                                    uploadTimelineFiles(row.id, files);
+                                    event.target.value = "";
+                                  }}
+                                />
+                              </label>
+                            </div>
                             {timelineMediaFor(row.id).length > 0 && (
-                              <p className="mt-2 text-xs text-muted-foreground">{timelineMediaFor(row.id).length} media item(s) attached</p>
+                              <div className="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
+                                {timelineMediaFor(row.id).slice(0, 6).map((media) => (
+                                  <MediaThumb
+                                    key={media.id}
+                                    row={media}
+                                    onDelete={() => deleteMedia(media)}
+                                    attachedTimelineLabels={media.timeline_entry_id ? [timelineLabelById.get(media.timeline_entry_id) || "Timeline update"] : []}
+                                  />
+                                ))}
+                              </div>
                             )}
                           </div>
                           <div className="flex flex-col sm:flex-row gap-2">
